@@ -783,9 +783,11 @@ document.addEventListener('keydown', function(e) {
 // =============================================================================
 
 (async function init() {
-  // Extract markdown URL from path: e.g. /https://example.com/article.md
-  const mdUrl = window.location.pathname.length > 1
-    ? window.location.pathname.slice(1)
+  // Extract markdown URL from path: /https:/example.com/article.md
+  // Browsers normalize // to / in paths, so restore the double slash
+  const raw = window.location.pathname.slice(1);
+  const mdUrl = raw.length > 0
+    ? raw.replace(/^(https?:\/)([^/])/, '$1/$2')
     : null;
 
   if (mdUrl) {

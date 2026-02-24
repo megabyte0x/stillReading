@@ -4,6 +4,7 @@
     { "source": "/SKILL.md", "destination": "/SKILL.md" },
     { "source": "/install.sh", "destination": "/install.sh" },
     { "source": "/README.md", "destination": "/README.md" },
-    { "source": "/(https?://.*)", "destination": "/index.html" }
+    { "source": "/https:/(.*)", "destination": "/index.html" },
+    { "source": "/http:/(.*)", "destination": "/index.html" }
   ]
 }
