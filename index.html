@@ -879,6 +879,12 @@
         <button class="ctrl-btn" onclick="adjustWpm(50)" title="Faster (→)">
           +
         </button>
+        <button class="ctrl-btn" id="speech-btn" onclick="toggleSpeech()" title="Speech (S)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line id="speech-mute-line" x1="23" y1="9" x2="17" y2="15"></line>
+          </svg>
+        </button>
       </div>
 
       <div class="stats">
@@ -945,6 +951,10 @@
       let wpm = 300;
       let playing = false;
       let timer = null;
+      let speechEnabled = false;
+
+      const elSpeechBtn = document.getElementById("speech-btn");
+      const elSpeechMuteLine = document.getElementById("speech-mute-line");
 
       // =============================================================================
       // ORP (Optimal Recognition Point)
@@ -1083,7 +1093,9 @@ The goal is not to race through text, but to find your optimal pace where speed 
         clearTimeout(timer);
         timer = null;
         playing = false;
+        speechDriving = false;
         elPlayBtn.textContent = "▶";
+        speechSynthesis.cancel();
       }
 
       function togglePlay() {
@@ -1092,10 +1104,16 @@ The goal is not to race through text, but to find your optimal pace where speed 
         playing = !playing;
         if (playing) {
           elPlayBtn.textContent = "❚❚";
-          tick();
+          if (speechEnabled) {
+            startSpeechDriven(idx);
+          } else {
+            tick();
+          }
         } else {
           elPlayBtn.textContent = "▶";
           clearTimeout(timer);
+          speechSynthesis.cancel();
+          speechDriving = false;
         }
       }
 
@@ -1121,6 +1139,78 @@ The goal is not to race through text, but to find your optimal pace where speed 
         void elWpmPopup.offsetWidth;
         elWpmPopup.style.animation = "";
         setTimeout(() => elWpmPopup.classList.add("hidden"), 820);
+      }
+
+      // =============================================================================
+      // SPEECH
+      // =============================================================================
+
+      let speechDriving = false; // true when speech controls word advancement
+
+      function toggleSpeech() {
+        speechEnabled = !speechEnabled;
+        elSpeechBtn.style.color = speechEnabled ? "var(--accent)" : "";
+        elSpeechBtn.style.borderColor = speechEnabled ? "var(--accent)" : "";
+        elSpeechMuteLine.style.display = speechEnabled ? "none" : "";
+        if (!speechEnabled) {
+          speechSynthesis.cancel();
+          speechDriving = false;
+          // If playing, restart timer-driven playback from current position
+          if (playing) {
+            clearTimeout(timer);
+            tick();
+          }
+        } else if (playing) {
+          // Switch to speech-driven mode
+          clearTimeout(timer);
+          startSpeechDriven(idx);
+        }
+      }
+
+      function startSpeechDriven(fromIdx) {
+        if (!speechEnabled || fromIdx >= words.length) return;
+        speechSynthesis.cancel();
+        speechDriving = true;
+
+        // Build the text from fromIdx onward, tracking char offset per word
+        const wordOffsets = []; // { charStart, wordIdx }
+        let text = "";
+        for (let i = fromIdx; i < words.length; i++) {
+          wordOffsets.push({ charStart: text.length, wordIdx: i });
+          text += (i > fromIdx ? " " : "") + words[i];
+        }
+
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.rate = Math.min(Math.max(wpm / 250, 0.8), 2.5);
+
+        utt.onboundary = function (e) {
+          if (e.name !== "word" || !speechDriving) return;
+          // Find which word this charIndex corresponds to
+          let matchIdx = fromIdx;
+          for (let i = wordOffsets.length - 1; i >= 0; i--) {
+            if (e.charIndex >= wordOffsets[i].charStart) {
+              matchIdx = wordOffsets[i].wordIdx;
+              break;
+            }
+          }
+          idx = matchIdx;
+          renderWord(words[idx]);
+          updateStats();
+          idx++; // advance past current word
+        };
+
+        utt.onend = function () {
+          if (!speechDriving) return;
+          speechDriving = false;
+          idx = words.length;
+          stop();
+        };
+
+        // Show the first word immediately
+        renderWord(words[fromIdx]);
+        updateStats();
+
+        speechSynthesis.speak(utt);
       }
 
       // =============================================================================
@@ -1173,7 +1263,11 @@ The goal is not to race through text, but to find your optimal pace where speed 
         if (wasPlaying) {
           playing = true;
           elPlayBtn.textContent = "❚❚";
-          tick();
+          if (speechEnabled) {
+            startSpeechDriven(idx);
+          } else {
+            tick();
+          }
         }
       });
 
@@ -1197,6 +1291,7 @@ The goal is not to race through text, but to find your optimal pace where speed 
         } else if (e.code === "ArrowLeft") adjustWpm(-50);
         else if (e.code === "ArrowRight") adjustWpm(50);
         else if (e.code === "KeyR") restart();
+        else if (e.code === "KeyS") toggleSpeech();
       });
 
       // =============================================================================
