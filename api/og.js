@@ -1,0 +1,61 @@
+import { ImageResponse } from '@vercel/og';
+
+export const config = { runtime: 'edge' };
+
+export default function handler() {
+  const h = (tag, props, ...children) => ({ type: tag, props: { ...props, children } });
+
+  return new ImageResponse(
+    h('div', {
+      style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#09090b',
+        fontFamily: 'monospace',
+      },
+    },
+      h('div', {
+        style: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
+      },
+        h('div', {
+          style: { width: '2px', height: '24px', backgroundColor: '#dc2626', opacity: 0.6 },
+        }),
+        h('div', {
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderTop: '1px solid #222228',
+            borderBottom: '1px solid #222228',
+            width: '900px',
+            height: '160px',
+          },
+        },
+          h('span', { style: { color: '#e4e4e7', fontSize: 72, fontWeight: 500, letterSpacing: '0.03em' } }, 'sti'),
+          h('span', { style: { color: '#dc2626', fontSize: 72, fontWeight: 700, letterSpacing: '0.03em' } }, 'l'),
+          h('span', { style: { color: '#e4e4e7', fontSize: 72, fontWeight: 500, letterSpacing: '0.03em' } }, 'lReading'),
+        ),
+        h('div', {
+          style: { width: '2px', height: '24px', backgroundColor: '#dc2626', opacity: 0.6 },
+        }),
+      ),
+      h('div', {
+        style: { display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 48, gap: 16 },
+      },
+        h('span', { style: { color: '#52525b', fontSize: 28 } }, 'Speed read anything. Word by word.'),
+        h('div', { style: { display: 'flex', gap: 32, color: '#3f3f46', fontSize: 20 } },
+          h('span', null, '1. Paste markdown'),
+          h('span', { style: { color: '#222228' } }, '|'),
+          h('span', null, '2. Hit play'),
+          h('span', { style: { color: '#222228' } }, '|'),
+          h('span', null, '3. Read faster'),
+        ),
+      ),
+    ),
+    { width: 1200, height: 630 },
+  );
+}

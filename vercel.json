@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/og.jsx": {
-      "runtime": "@vercel/edge@1.2.2"
-    }
-  }
-}
