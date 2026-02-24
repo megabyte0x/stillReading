@@ -19,14 +19,14 @@ RSVP (Rapid Serial Visual Presentation) speed reader. Displays words one at a ti
 - Clickable progress bar with seek
 - Keyboard shortcuts: Space (play/pause), Arrow keys (speed), R (restart)
 - Markdown stripping — paste formatted markdown, read clean text
-- External URL loading — load content via `?url=` query parameter
+- External URL loading — load content via path
 
 ## Load content via URL
 
-Provide a `url` query parameter pointing to raw markdown:
+Append a raw markdown URL after `/`:
 
 ```
-https://still-reading.vercel.app?url=https://example.com/article.md
+https://still-reading.vercel.app/https://example.com/article.md
 ```
 
 Content is pre-loaded in the reader, ready to play.

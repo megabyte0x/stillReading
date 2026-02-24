@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/SKILL.md", "destination": "/SKILL.md" },
+    { "source": "/install.sh", "destination": "/install.sh" },
+    { "source": "/README.md", "destination": "/README.md" },
+    { "source": "/(https?://.*)", "destination": "/index.html" }
+  ]
+}

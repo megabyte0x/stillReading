@@ -23,10 +23,10 @@ curl -fsSL https://still-reading.vercel.app/install.sh | bash
 
 1. Write your content as raw markdown following the [content formatting rules](#content-formatting-rules) below
 2. Publish it at a publicly accessible URL (see [Publishing with here.now](#publishing-with-herenow) below)
-3. Construct a stillReading URL using the `url` query parameter:
+3. Construct a stillReading URL by appending the raw markdown URL after `/`:
 
 ```
-https://still-reading.vercel.app?url=<RAW_MARKDOWN_URL>
+https://still-reading.vercel.app/<RAW_MARKDOWN_URL>
 ```
 
 4. Share the constructed URL with the user
@@ -60,7 +60,7 @@ https://dreamy-sandal-ye86.here.now/index.md
 
 The stillReading URL is:
 ```
-https://still-reading.vercel.app?url=https://dreamy-sandal-ye86.here.now/index.md
+https://still-reading.vercel.app/https://dreamy-sandal-ye86.here.now/index.md
 ```
 
 ## What the user sees
