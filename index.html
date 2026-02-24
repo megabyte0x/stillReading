@@ -760,9 +760,31 @@ document.addEventListener('keydown', function(e) {
 // INIT
 // =============================================================================
 
-elTextarea.value = SAMPLE;
-loadMarkdown(SAMPLE);
-renderIdle();
+(async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const mdUrl  = params.get('url');
+
+  if (mdUrl) {
+    try {
+      const res = await fetch(mdUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const md = await res.text();
+      elTextarea.value = md;
+      loadMarkdown(md);
+      renderIdle();
+    } catch (err) {
+      console.error('Failed to load markdown from URL:', err);
+      elTextarea.value = '';
+      elTextarea.placeholder = `Failed to load content from:\n${mdUrl}\n\nPaste your markdown here instead...`;
+      loadMarkdown('');
+      switchView('editor');
+    }
+  } else {
+    elTextarea.value = SAMPLE;
+    loadMarkdown(SAMPLE);
+    renderIdle();
+  }
+})();
   </script>
 </body>
 </html>
