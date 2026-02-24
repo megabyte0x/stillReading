@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**stillReading** is an RSVP (Rapid Serial Visual Presentation) speed reader webapp. It takes markdown input and presents words one at a time using Spritz-style ORP (Optimal Recognition Point) highlighting. Deployed at https://still-reading.vercel.app.
+**stillReading** is an RSVP (Rapid Serial Visual Presentation) speed reader webapp. It takes markdown input and presents words one at a time using Spritz-style ORP (Optimal Recognition Point) highlighting. Deployed at https://stillreading.xyz.
 
 ## Architecture
 

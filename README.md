@@ -2,7 +2,7 @@
 
 RSVP (Rapid Serial Visual Presentation) speed reader. Displays words one at a time with ORP (Optimal Recognition Point) highlighting — the same technique pioneered by Spritz.
 
-**Live at [still-reading.vercel.app](https://still-reading.vercel.app)**
+**Live at [stillreading.xyz](https://stillreading.xyz)**
 
 ## How it works
 
@@ -26,7 +26,7 @@ RSVP (Rapid Serial Visual Presentation) speed reader. Displays words one at a ti
 Append a raw markdown URL after `/`:
 
 ```
-https://still-reading.vercel.app/https://example.com/article.md
+https://stillreading.xyz/https://example.com/article.md
 ```
 
 Content is pre-loaded in the reader, ready to play.
@@ -44,7 +44,7 @@ npx skills add megabyte0x/stillReading --skill still-reading -g
 Or without npm:
 
 ```bash
-curl -fsSL https://still-reading.vercel.app/install.sh | bash
+curl -fsSL https://stillreading.xyz/install.sh | bash
 ```
 
 See [SKILL.md](SKILL.md) for the full spec and formatting rules.

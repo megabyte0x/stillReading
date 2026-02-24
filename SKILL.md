@@ -5,7 +5,7 @@ description: Converts markdown content into an RSVP speed-reading experience. Pu
 
 # stillReading
 
-RSVP (Rapid Serial Visual Presentation) speed reader that displays words one at a time with ORP (Optimal Recognition Point) highlighting. Deployed at `https://still-reading.vercel.app`.
+RSVP (Rapid Serial Visual Presentation) speed reader that displays words one at a time with ORP (Optimal Recognition Point) highlighting. Deployed at `https://stillreading.xyz`.
 
 ## Install
 
@@ -16,7 +16,7 @@ npx skills add megabyte0x/stillReading --skill still-reading -g
 
 Otherwise:
 ```bash
-curl -fsSL https://still-reading.vercel.app/install.sh | bash
+curl -fsSL https://stillreading.xyz/install.sh | bash
 ```
 
 ## How to use
@@ -26,7 +26,7 @@ curl -fsSL https://still-reading.vercel.app/install.sh | bash
 3. Construct a stillReading URL by appending the raw markdown URL after `/`:
 
 ```
-https://still-reading.vercel.app/<RAW_MARKDOWN_URL>
+https://stillreading.xyz/<RAW_MARKDOWN_URL>
 ```
 
 4. Share the constructed URL with the user
@@ -60,7 +60,7 @@ https://dreamy-sandal-ye86.here.now/index.md
 
 The stillReading URL is:
 ```
-https://still-reading.vercel.app/https://dreamy-sandal-ye86.here.now/index.md
+https://stillreading.xyz/https://dreamy-sandal-ye86.here.now/index.md
 ```
 
 ## What the user sees

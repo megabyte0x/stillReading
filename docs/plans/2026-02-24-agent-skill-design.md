@@ -21,7 +21,7 @@ No auto-play — user hits play when ready.
 A file at `/SKILL.md` following Anthropic's Agent Skills spec. Contains:
 
 - YAML frontmatter with `name` and `description`
-- Instructions for agents: publish raw markdown at a public URL, construct `https://still-reading.vercel.app?url=<markdown-url>`
+- Instructions for agents: publish raw markdown at a public URL, construct `https://stillreading.xyz?url=<markdown-url>`
 - Example URL
 - Requirements note (public URL, CORS-permissive)
 
@@ -30,7 +30,7 @@ Under 100 lines. No implementation details — just the URL contract.
 ## URL Format
 
 ```
-https://still-reading.vercel.app?url=https://example.com/article.md
+https://stillreading.xyz?url=https://example.com/article.md
 ```
 
 ## Error Handling
