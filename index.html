@@ -333,6 +333,104 @@
     }
     .hidden { display: none !important; }
 
+    /* ── Onboarding banner ──────────────────────────────────────── */
+    #onboarding {
+      width: 100%;
+      max-width: 680px;
+      margin-top: 88px;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border-dim);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeIn 0.3s ease;
+    }
+    .onboarding-tabs {
+      display: flex;
+      gap: 2px;
+      background: var(--bg);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 3px;
+      align-self: flex-start;
+    }
+    .onboarding-tab {
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 20px;
+      border: none;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: 0.01em;
+    }
+    .onboarding-tab.active { background: var(--border); color: #fafafa; }
+    .onboarding-panel { display: none; flex-direction: column; gap: 12px; }
+    .onboarding-panel.active { display: flex; }
+    .onboarding-url {
+      width: 100%;
+      height: 44px;
+      background: var(--bg);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 0 14px;
+    }
+    .onboarding-url:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+    .onboarding-url::placeholder { color: var(--text-dim); }
+    .onboarding-desc {
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .code-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .code-block code {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .copy-btn {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border: 1px solid var(--border-dim);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .copy-btn:hover { color: var(--text); border-color: var(--text-muted); }
+    .or-divider {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
     /* ── Editor view ─────────────────────────────────────────────── */
     #editor-view {
       width: 100%; max-width: 680px;
@@ -409,6 +507,12 @@
       /* Editor */
       .load-btn    { align-self: stretch; text-align: center; }
       #editor-view { padding-bottom: env(safe-area-inset-bottom, 24px); }
+
+      /* Onboarding */
+      #onboarding { margin-top: 72px; padding: 18px; }
+      .code-block { flex-direction: column; align-items: stretch; gap: 8px; }
+      .code-block code { font-size: 0.72rem; }
+      .copy-btn { align-self: flex-end; }
     }
 
     /* ── Very small phones ≤ 360px ─────────────────────────────── */
