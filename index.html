@@ -783,12 +783,14 @@ document.addEventListener('keydown', function(e) {
 // =============================================================================
 
 (async function init() {
-  // Extract markdown URL from path: /https:/example.com/article.md
+  // Support both path-based and query parameter URLs:
+  //   path:  /https://example.com/article.md
+  //   query: ?url=https://example.com/article.md
   // Browsers normalize // to / in paths, so restore the double slash
   const raw = window.location.pathname.slice(1);
-  const mdUrl = raw.length > 0
-    ? raw.replace(/^(https?:\/)([^/])/, '$1/$2')
-    : null;
+  const queryUrl = new URLSearchParams(window.location.search).get('url');
+  const mdUrl = queryUrl
+    || (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, '$1/$2') : null);
 
   if (mdUrl) {
     try {
