@@ -487,6 +487,7 @@
 const elBefore      = document.getElementById('w-before');
 const elPivot       = document.getElementById('w-pivot');
 const elAfter       = document.getElementById('w-after');
+const elWordText    = elBefore.parentElement; // .word-text grid element
 const elProgressBar = document.getElementById('progress-bar');
 const elProgressFill= document.getElementById('progress-fill');
 const elPlayBtn     = document.getElementById('play-btn');
@@ -587,13 +588,40 @@ function renderWord(word) {
   elPivot.textContent   = word[orp] || '';
   elAfter.textContent   = word.slice(orp + 1);
   elPivot.style.opacity = '1';
+  fitWord();
 }
 
 function renderIdle() {
-  elBefore.textContent  = '';
-  elPivot.textContent   = '▶';
-  elAfter.textContent   = '';
-  elPivot.style.opacity = '0.2';
+  elBefore.textContent      = '';
+  elPivot.textContent       = '▶';
+  elAfter.textContent       = '';
+  elPivot.style.opacity     = '0.2';
+  elWordText.style.fontSize = ''; // reset any word-level scaling
+}
+
+/**
+ * Scale the word font down if the longest half (before or after)
+ * would overflow the available half-container width.
+ * Reading: reset → measure at CSS size → shrink if needed.
+ */
+function fitWord() {
+  // 1. Reset to CSS-defined size so we measure from the natural base
+  elWordText.style.fontSize = '';
+
+  // 2. Force reflow, then measure
+  const halfW   = elWordText.offsetWidth / 2;   // half the grid container
+  const pivotW  = elPivot.offsetWidth;           // width of the single ORP char
+  const beforeW = elBefore.scrollWidth;          // full text width, ignoring cell clip
+  const afterW  = elAfter.scrollWidth;
+
+  // Each side must fit: textWidth + pivotW/2 ≤ halfW
+  const needed = Math.max(beforeW, afterW) + pivotW / 2;
+
+  if (needed > halfW && halfW > 0) {
+    const base    = parseFloat(getComputedStyle(elWordText).fontSize);
+    const newSize = base * (halfW / needed) * 0.96; // 4% safety margin
+    elWordText.style.fontSize = newSize + 'px';
+  }
 }
 
 function updateStats() {
@@ -723,6 +751,11 @@ elProgressBar.addEventListener('click', function(e) {
 // Editor live word count
 elTextarea.addEventListener('input', function() {
   elEditorCount.textContent = `${parseMarkdown(elTextarea.value).length} words`;
+});
+
+// Re-fit on resize / orientation change
+window.addEventListener('resize', function() {
+  if (elBefore.textContent || elAfter.textContent) fitWord();
 });
 
 // Keyboard shortcuts
