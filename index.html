@@ -38,14 +38,21 @@
 
     /* ── Header ─────────────────────────────────────────────────── */
     #header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
       width: 100%;
       max-width: 640px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 24px 0 20px;
+      padding: 20px 20px 18px;
       border-bottom: 1px solid #1a1a1f;
-      margin-bottom: 40px;
+      background: rgba(9, 9, 11, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 10;
     }
     .logo { display: flex; align-items: center; gap: 8px; }
     .logo-icon { color: #dc2626; font-size: 1.1rem; }
@@ -94,7 +101,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      flex: 1;
+      min-height: 100vh;
     }
 
     .redicle-container {
@@ -228,7 +235,9 @@
       width: 100%; max-width: 640px;
       display: flex;
       flex-direction: column;
-      gap: 16px; flex: 1;
+      gap: 16px;
+      padding-top: 84px;
+      min-height: 100vh;
       animation: fadeIn 0.3s ease;
     }
     .editor-header { display: flex; justify-content: space-between; align-items: center; }
