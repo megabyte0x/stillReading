@@ -1,594 +1,1004 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>stillReading</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2309090b'/><line x1='4' y1='8' x2='28' y2='8' stroke='%23222228' stroke-width='1'/><line x1='4' y1='24' x2='28' y2='24' stroke='%23222228' stroke-width='1'/><line x1='16' y1='2' x2='16' y2='8' stroke='%23dc2626' stroke-width='1.5' opacity='0.7'/><line x1='16' y1='24' x2='16' y2='30' stroke='%23dc2626' stroke-width='1.5' opacity='0.7'/><text x='16' y='19' text-anchor='middle' font-family='monospace' font-size='14' font-weight='700' fill='%23dc2626'>R</text></svg>" />
-  <meta name="description" content="RSVP speed reader. Paste markdown, read word-by-word with ORP highlighting. No saccades, faster reading." />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>stillReading</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2309090b'/><line x1='4' y1='8' x2='28' y2='8' stroke='%23222228' stroke-width='1'/><line x1='4' y1='24' x2='28' y2='24' stroke='%23222228' stroke-width='1'/><line x1='16' y1='2' x2='16' y2='8' stroke='%23dc2626' stroke-width='1.5' opacity='0.7'/><line x1='16' y1='24' x2='16' y2='30' stroke='%23dc2626' stroke-width='1.5' opacity='0.7'/><text x='16' y='19' text-anchor='middle' font-family='monospace' font-size='14' font-weight='700' fill='%23dc2626'>R</text></svg>"
+    />
+    <meta
+      name="description"
+      content="RSVP speed reader. Paste markdown, read word-by-word with ORP highlighting. No saccades, faster reading."
+    />
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="stillReading" />
-  <meta property="og:description" content="Speed read anything. Paste markdown or load via URL — words appear one at a time with ORP highlighting. 1. Paste markdown 2. Hit play 3. Read faster" />
-  <meta property="og:url" content="https://stillreading.xyz" />
-  <meta property="og:image" content="https://stillreading.xyz/api/og" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="stillReading" />
+    <meta
+      property="og:description"
+      content="Speed read anything. Paste markdown or load via URL — words appear one at a time with ORP highlighting. 1. Paste markdown 2. Hit play 3. Read faster"
+    />
+    <meta property="og:url" content="https://stillreading.xyz" />
+    <meta property="og:image" content="https://stillreading.xyz/api/og" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="stillReading" />
-  <meta name="twitter:description" content="Speed read anything. Paste markdown or load via URL — words appear one at a time with ORP highlighting. 1. Paste markdown 2. Hit play 3. Read faster" />
-  <meta name="twitter:image" content="https://stillreading.xyz/api/og" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="stillReading" />
+    <meta
+      name="twitter:description"
+      content="Speed read anything. Paste markdown or load via URL — words appear one at a time with ORP highlighting. 1. Paste markdown 2. Hit play 3. Read faster"
+    />
+    <meta name="twitter:image" content="https://stillreading.xyz/api/og" />
 
-  <!-- Agent Skill Discovery -->
-  <link rel="agent-skill" href="https://stillreading.xyz/SKILL.md" />
-  <meta name="agent-skill" content="https://stillreading.xyz/SKILL.md" />
+    <!-- Agent Skill Discovery -->
+    <link rel="agent-skill" href="https://stillreading.xyz/SKILL.md" />
+    <meta name="agent-skill" content="https://stillreading.xyz/SKILL.md" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    /* ── Design tokens ───────────────────────────────────────────── */
-    :root {
-      --bg:          #09090b;
-      --surface:     #111113;
-      --border:      #222228;
-      --border-dim:  #18181c;
-      --text:        #e4e4e7;
-      --text-muted:  #52525b;
-      --text-dim:    #3f3f46;
-      --accent:      #dc2626;
-      --accent-dim:  rgba(220, 38, 38, 0.08);
-      --mono:        'JetBrains Mono', monospace;
-      --sans:        'Outfit', sans-serif;
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ── Design tokens ───────────────────────────────────────────── */
+      :root {
+        --bg: #09090b;
+        --surface: #111113;
+        --border: #222228;
+        --border-dim: #18181c;
+        --text: #e4e4e7;
+        --text-muted: #52525b;
+        --text-dim: #3f3f46;
+        --accent: #dc2626;
+        --accent-dim: rgba(220, 38, 38, 0.08);
+        --mono: "JetBrains Mono", monospace;
+        --sans: "Outfit", sans-serif;
 
-      /* Fluid scale: mobile → desktop */
-      --word-size:   clamp(2rem, 5vw, 4.5rem);
-      --redicle-h:   clamp(100px, 14vw, 220px);
-    }
+        /* Fluid scale: mobile → desktop */
+        --word-size: clamp(2rem, 5vw, 4.5rem);
+        --redicle-h: clamp(100px, 14vw, 220px);
+      }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
 
-    body {
-      font-family: var(--sans);
-      background: var(--bg);
-      color: #fafafa;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 24px;
-      animation: fadeIn 0.5s ease;
-    }
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: #fafafa;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 24px;
+        animation: fadeIn 0.5s ease;
+      }
 
-    ::selection { background: var(--accent); color: #fff; }
-    button:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+      ::selection {
+        background: var(--accent);
+        color: #fff;
+      }
+      button:focus-visible {
+        outline: 1px solid var(--accent);
+        outline-offset: 2px;
+      }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes wpmPop {
-      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
-      25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
-    }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes wpmPop {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.85);
+        }
+        25% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.04);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
 
-    /* ── Header ─────────────────────────────────────────────────── */
-    #header {
-      position: fixed;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 680px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 22px 24px 20px;
-      border-bottom: 1px solid var(--border-dim);
-      background: rgba(9, 9, 11, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      z-index: 10;
-    }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon { color: var(--accent); font-size: 0.9rem; }
-    .logo-text {
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 0.9rem;
-      letter-spacing: -0.03em;
-      color: #fafafa;
-    }
-    .logo-sub {
-      font-family: var(--mono);
-      font-weight: 400;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      letter-spacing: -0.01em;
-    }
-    .nav-tabs {
-      display: flex;
-      gap: 2px;
-      background: var(--surface);
-      border: 1px solid var(--border-dim);
-      border-radius: 8px;
-      padding: 3px;
-    }
-    .tab {
-      font-family: var(--sans);
-      font-size: 0.78rem;
-      font-weight: 500;
-      padding: 5px 18px;
-      border: none;
-      border-radius: 5px;
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      letter-spacing: 0.01em;
-    }
-    .tab.active { background: var(--border); color: #fafafa; }
+      /* ── Header ─────────────────────────────────────────────────── */
+      #header {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 680px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 22px 24px 20px;
+        border-bottom: 1px solid var(--border-dim);
+        background: rgba(9, 9, 11, 0.88);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 10;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo-icon {
+        color: var(--accent);
+        font-size: 0.9rem;
+      }
+      .logo-text {
+        font-family: var(--mono);
+        font-weight: 700;
+        font-size: 0.9rem;
+        letter-spacing: -0.03em;
+        color: #fafafa;
+      }
+      .logo-sub {
+        font-family: var(--mono);
+        font-weight: 400;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        letter-spacing: -0.01em;
+      }
+      .nav-tabs {
+        display: flex;
+        gap: 2px;
+        background: var(--surface);
+        border: 1px solid var(--border-dim);
+        border-radius: 8px;
+        padding: 3px;
+      }
+      .tab {
+        font-family: var(--sans);
+        font-size: 0.78rem;
+        font-weight: 500;
+        padding: 5px 18px;
+        border: none;
+        border-radius: 5px;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        letter-spacing: 0.01em;
+      }
+      .tab.active {
+        background: var(--border);
+        color: #fafafa;
+      }
 
-    /* ── View switching ──────────────────────────────────────────── */
-    [data-view="editor"] #reader-view { display: none; }
-    [data-view="reader"] #editor-view { display: none; }
+      /* ── View switching ──────────────────────────────────────────── */
+      [data-view="editor"] #reader-view {
+        display: none;
+      }
+      [data-view="reader"] #editor-view {
+        display: none;
+      }
 
-    /* ── Reader view ─────────────────────────────────────────────── */
-    #reader-view {
-      width: 100%;
-      max-width: 680px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      gap: 0;
-    }
+      /* ── Reader view ─────────────────────────────────────────────── */
+      #reader-view {
+        width: 100%;
+        max-width: 680px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        gap: 0;
+      }
 
-    /* ── Redicle ─────────────────────────────────────────────────── */
-    .redicle-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: clamp(32px, 6vh, 80px) 0 clamp(28px, 5vh, 64px);
-    }
-    .redicle {
-      position: relative;
-      width: 100%;
-      height: var(--redicle-h);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    /* Full-viewport border lines */
-    .redicle::before,
-    .redicle::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100vw;
-      height: 1px;
-      background: var(--border);
-    }
-    .redicle::before { top: 0; }
-    .redicle::after  { bottom: 0; }
+      /* ── Redicle ─────────────────────────────────────────────────── */
+      .redicle-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: clamp(32px, 6vh, 80px) 0 clamp(28px, 5vh, 64px);
+      }
+      .redicle {
+        position: relative;
+        width: 100%;
+        height: var(--redicle-h);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Full-viewport border lines */
+      .redicle::before,
+      .redicle::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100vw;
+        height: 1px;
+        background: var(--border);
+      }
+      .redicle::before {
+        top: 0;
+      }
+      .redicle::after {
+        bottom: 0;
+      }
 
-    /* ORP guide markers */
-    .guide-top, .guide-bottom {
-      position: absolute;
-      left: 50%;
-      width: 1px;
-      background: var(--accent);
-      opacity: 0.5;
-    }
-    .guide-top    { top: -18px;    height: 18px; }
-    .guide-bottom { bottom: -18px; height: 18px; }
+      /* ORP guide markers */
+      .guide-top,
+      .guide-bottom {
+        position: absolute;
+        left: 50%;
+        width: 1px;
+        background: var(--accent);
+        opacity: 0.5;
+      }
+      .guide-top {
+        top: -18px;
+        height: 18px;
+      }
+      .guide-bottom {
+        bottom: -18px;
+        height: 18px;
+      }
 
-    /* ── Word display ────────────────────────────────────────────── */
-    .word-wrapper {
-      position: relative;
-      width: 100%;
-      height: 1.2em;
-      font-size: var(--word-size);
-    }
-    .word-text {
-      font-family: var(--mono);
-      font-size: inherit;
-      font-weight: 500;
-      letter-spacing: 0.03em;
-      color: var(--text);
-      white-space: nowrap;
-      position: absolute;
-      /* Shift so the LEFT edge of #w-pivot sits at 50% of the wrapper,
+      /* ── Word display ────────────────────────────────────────────── */
+      .word-wrapper {
+        position: relative;
+        width: 100%;
+        height: 1.2em;
+        font-size: var(--word-size);
+      }
+      .word-text {
+        font-family: var(--mono);
+        font-size: inherit;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        color: var(--text);
+        white-space: nowrap;
+        position: absolute;
+        /* Shift so the LEFT edge of #w-pivot sits at 50% of the wrapper,
          then nudge left by half a character so the CENTRE of the pivot
          aligns with the guide markers.  1ch ≈ character advance width
          in a monospace font. */
-      left: 50%;
-    }
-    #w-before { /* flows inline, no special positioning needed */ }
-    #w-pivot  { color: var(--accent); font-weight: 700; }
-    #w-after  { /* flows inline */ }
+        left: 50%;
+      }
+      #w-before {
+        /* flows inline, no special positioning needed */
+      }
+      #w-pivot {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      #w-after {
+        /* flows inline */
+      }
 
-    /* ── Progress bar ────────────────────────────────────────────── */
-    .progress-container {
-      width: 100%;
-      height: 1px;
-      background: var(--border-dim);
-      cursor: pointer;
-      margin-bottom: clamp(28px, 4vh, 48px);
-      position: relative;
-    }
-    /* expanded touch/click area */
-    .progress-container::before {
-      content: '';
-      position: absolute;
-      inset: -8px 0;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--text-dim);
-      width: 0%;
-      transition: width 0.08s linear;
-    }
+      /* ── Progress bar ────────────────────────────────────────────── */
+      .progress-container {
+        width: 100%;
+        height: 1px;
+        background: var(--border-dim);
+        cursor: pointer;
+        margin-bottom: clamp(28px, 4vh, 48px);
+        position: relative;
+      }
+      /* expanded touch/click area */
+      .progress-container::before {
+        content: "";
+        position: absolute;
+        inset: -8px 0;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--text-dim);
+        width: 0%;
+        transition: width 0.08s linear;
+      }
 
-    /* ── Controls ────────────────────────────────────────────────── */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: clamp(14px, 2vw, 24px);
-      margin-bottom: clamp(20px, 3vh, 36px);
-    }
-    .play-btn {
-      width: clamp(52px, 6vw, 68px);
-      height: clamp(52px, 6vw, 68px);
-      border-radius: 50%;
-      border: 1.5px solid var(--accent);
-      background: transparent;
-      color: var(--accent);
-      font-size: clamp(1rem, 1.5vw, 1.3rem);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s ease, transform 0.1s ease;
-      font-family: inherit;
-      flex-shrink: 0;
-    }
-    .play-btn:hover  { background: var(--accent-dim); }
-    .play-btn:active { transform: scale(0.95); }
-    .ctrl-btn {
-      width: clamp(38px, 4.5vw, 52px);
-      height: clamp(38px, 4.5vw, 52px);
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      font-size: clamp(1rem, 1.4vw, 1.2rem);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-      font-family: inherit;
-      flex-shrink: 0;
-    }
-    .ctrl-btn:hover  { border-color: var(--text-muted); color: #a1a1aa; }
-    .ctrl-btn:active { transform: scale(0.93); }
-    .wpm-display {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: clamp(44px, 5vw, 60px);
-      gap: 1px;
-    }
-    #wpm-number {
-      font-family: var(--mono);
-      font-size: clamp(1rem, 1.4vw, 1.3rem);
-      font-weight: 600;
-      color: #fafafa;
-      line-height: 1;
-    }
-    .wpm-label {
-      font-family: var(--mono);
-      font-size: 0.6rem;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
+      /* ── Controls ────────────────────────────────────────────────── */
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: clamp(14px, 2vw, 24px);
+        margin-bottom: clamp(20px, 3vh, 36px);
+      }
+      .play-btn {
+        width: clamp(52px, 6vw, 68px);
+        height: clamp(52px, 6vw, 68px);
+        border-radius: 50%;
+        border: 1.5px solid var(--accent);
+        background: transparent;
+        color: var(--accent);
+        font-size: clamp(1rem, 1.5vw, 1.3rem);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+        font-family: inherit;
+        flex-shrink: 0;
+      }
+      .play-btn:hover {
+        background: var(--accent-dim);
+      }
+      .play-btn:active {
+        transform: scale(0.95);
+      }
+      .ctrl-btn {
+        width: clamp(38px, 4.5vw, 52px);
+        height: clamp(38px, 4.5vw, 52px);
+        border-radius: 50%;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-muted);
+        font-size: clamp(1rem, 1.4vw, 1.2rem);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          border-color 0.15s ease,
+          color 0.15s ease,
+          transform 0.1s ease;
+        font-family: inherit;
+        flex-shrink: 0;
+      }
+      .ctrl-btn:hover {
+        border-color: var(--text-muted);
+        color: #a1a1aa;
+      }
+      .ctrl-btn:active {
+        transform: scale(0.93);
+      }
+      .wpm-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: clamp(44px, 5vw, 60px);
+        gap: 1px;
+      }
+      #wpm-number {
+        font-family: var(--mono);
+        font-size: clamp(1rem, 1.4vw, 1.3rem);
+        font-weight: 600;
+        color: #fafafa;
+        line-height: 1;
+      }
+      .wpm-label {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
 
-    /* ── Stats ───────────────────────────────────────────────────── */
-    .stats {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    #stat-pos, #stat-eta {
-      font-family: var(--mono);
-      font-size: clamp(0.65rem, 1vw, 0.78rem);
-      color: var(--text-dim);
-    }
-    .stat-divider {
-      color: var(--border);
-      font-size: 0.75rem;
-    }
+      /* ── Stats ───────────────────────────────────────────────────── */
+      .stats {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      #stat-pos,
+      #stat-eta {
+        font-family: var(--mono);
+        font-size: clamp(0.65rem, 1vw, 0.78rem);
+        color: var(--text-dim);
+      }
+      .stat-divider {
+        color: var(--border);
+        font-size: 0.75rem;
+      }
 
-    /* ── WPM popup ───────────────────────────────────────────────── */
-    .wpm-popup {
-      position: fixed; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-family: var(--mono);
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: var(--accent);
-      background: rgba(9, 9, 11, 0.92);
-      padding: 10px 26px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      pointer-events: none;
-      z-index: 100;
-      animation: wpmPop 0.82s ease forwards;
-    }
-    .hidden { display: none !important; }
+      /* ── WPM popup ───────────────────────────────────────────────── */
+      .wpm-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: var(--mono);
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--accent);
+        background: rgba(9, 9, 11, 0.92);
+        padding: 10px 26px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        pointer-events: none;
+        z-index: 100;
+        animation: wpmPop 0.82s ease forwards;
+      }
+      .hidden {
+        display: none !important;
+      }
 
-    /* ── Editor view ─────────────────────────────────────────────── */
-    #editor-view {
-      width: 100%; max-width: 680px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding-top: 88px;
-      padding-bottom: 40px;
-      min-height: 100vh;
-      animation: fadeIn 0.3s ease;
-    }
-    .editor-header { display: flex; justify-content: space-between; align-items: center; }
-    .editor-label { font-size: 0.85rem; color: #71717a; letter-spacing: 0.01em; }
-    #editor-word-count {
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-    .md-textarea {
-      width: 100%;
-      min-height: clamp(260px, 50vh, 540px);
-      background: var(--surface);
-      border: 1px solid var(--border-dim);
-      border-radius: 10px;
-      color: #c4c4c8;
-      font-family: var(--mono);
-      font-size: 0.84rem;
-      line-height: 1.75;
-      padding: 20px 24px;
-      resize: vertical;
-    }
-    .md-textarea:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
-    .load-btn {
-      align-self: flex-end;
-      padding: 11px 32px;
-      background: var(--accent);
-      border: none;
-      border-radius: 7px;
-      color: #fff;
-      font-family: var(--sans);
-      font-size: 0.88rem;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      cursor: pointer;
-      transition: background 0.15s ease, transform 0.1s ease;
-    }
-    .load-btn:hover  { background: #b91c1c; }
-    .load-btn:active { transform: scale(0.97); }
+      /* ── Onboarding banner ──────────────────────────────────────── */
+      #onboarding {
+        width: 100%;
+        max-width: 680px;
+        margin-top: 88px;
+        padding: 24px;
+        background: var(--surface);
+        border: 1px solid var(--border-dim);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        animation: fadeIn 0.3s ease;
+      }
+      .onboarding-tabs {
+        display: flex;
+        gap: 2px;
+        background: var(--bg);
+        border: 1px solid var(--border-dim);
+        border-radius: 8px;
+        padding: 3px;
+        align-self: flex-start;
+      }
+      .onboarding-tab {
+        font-family: var(--sans);
+        font-size: 0.78rem;
+        font-weight: 500;
+        padding: 5px 20px;
+        border: none;
+        border-radius: 5px;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        letter-spacing: 0.01em;
+      }
+      .onboarding-tab.active {
+        background: var(--border);
+        color: #fafafa;
+      }
+      .onboarding-panel {
+        display: none;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .onboarding-panel.active {
+        display: flex;
+      }
+      .onboarding-url {
+        width: 100%;
+        height: 44px;
+        background: var(--bg);
+        border: 1px solid var(--border-dim);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        padding: 0 14px;
+      }
+      .onboarding-url:focus {
+        outline: 1px solid var(--accent);
+        border-color: var(--accent);
+      }
+      .onboarding-url::placeholder {
+        color: var(--text-dim);
+      }
+      .onboarding-desc {
+        font-family: var(--sans);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+      .code-block {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: var(--bg);
+        border: 1px solid var(--border-dim);
+        border-radius: 8px;
+        padding: 10px 14px;
+      }
+      .code-block code {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .copy-btn {
+        font-family: var(--sans);
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 4px 10px;
+        border: 1px solid var(--border-dim);
+        border-radius: 5px;
+        background: transparent;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .copy-btn:hover {
+        color: var(--text);
+        border-color: var(--text-muted);
+      }
+      .or-divider {
+        font-family: var(--sans);
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        text-align: center;
+      }
+      #content-title {
+        display: none;
+        width: 100%;
+        max-width: 680px;
+        margin-top: 88px;
+        padding: 0 24px;
+        font-family: var(--mono);
+        font-size: clamp(0.95rem, 2vw, 1.15rem);
+        font-weight: 500;
+        color: var(--text-muted);
+        letter-spacing: -0.01em;
+        text-align: center;
+        animation: fadeIn 0.3s ease;
+      }
 
-    /* ══════════════════════════════════════════════════════════════
+      /* ── Footer ───────────────────────────────────────────────────── */
+      .site-footer {
+        position: fixed;
+        bottom: 16px;
+        right: 20px;
+        z-index: 10;
+      }
+      .site-footer a {
+        display: block;
+        color: var(--text-dim);
+        transition: color 0.15s ease;
+      }
+      .site-footer a:hover { color: var(--text-muted); }
+      .site-footer svg { width: 18px; height: 18px; }
+
+      /* ── Editor view ─────────────────────────────────────────────── */
+      #editor-view {
+        width: 100%;
+        max-width: 680px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-top: 88px;
+        padding-bottom: 40px;
+        min-height: 100vh;
+        animation: fadeIn 0.3s ease;
+      }
+      .editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .editor-label {
+        font-size: 0.85rem;
+        color: #71717a;
+        letter-spacing: 0.01em;
+      }
+      #editor-word-count {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--text-dim);
+      }
+      .md-textarea {
+        width: 100%;
+        min-height: clamp(260px, 50vh, 540px);
+        background: var(--surface);
+        border: 1px solid var(--border-dim);
+        border-radius: 10px;
+        color: #c4c4c8;
+        font-family: var(--mono);
+        font-size: 0.84rem;
+        line-height: 1.75;
+        padding: 20px 24px;
+        resize: vertical;
+      }
+      .md-textarea:focus {
+        outline: 1px solid var(--accent);
+        border-color: var(--accent);
+      }
+      .load-btn {
+        align-self: flex-end;
+        padding: 11px 32px;
+        background: var(--accent);
+        border: none;
+        border-radius: 7px;
+        color: #fff;
+        font-family: var(--sans);
+        font-size: 0.88rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        cursor: pointer;
+        transition:
+          background 0.15s ease,
+          transform 0.1s ease;
+      }
+      .load-btn:hover {
+        background: #b91c1c;
+      }
+      .load-btn:active {
+        transform: scale(0.97);
+      }
+
+      /* ══════════════════════════════════════════════════════════════
        RESPONSIVE
        ══════════════════════════════════════════════════════════════ */
 
-    /* ── Small phones ≤ 480px ──────────────────────────────────── */
-    @media (max-width: 480px) {
-      :root {
-        /* ~24px at 375px, ~27px at 430px — fits 16-char words in half-container */
-        --word-size:  clamp(1.4rem, 6.3vw, 1.8rem);
-        --redicle-h:  clamp(80px, 22vw, 120px);
+      /* ── Small phones ≤ 480px ──────────────────────────────────── */
+      @media (max-width: 480px) {
+        :root {
+          /* ~24px at 375px, ~27px at 430px — fits 16-char words in half-container */
+          --word-size: clamp(1.4rem, 6.3vw, 1.8rem);
+          --redicle-h: clamp(80px, 22vw, 120px);
+        }
+        body {
+          padding: 0 16px;
+        }
+        #header {
+          padding: 16px 16px 14px;
+        }
+        .logo-text,
+        .logo-sub {
+          font-size: 0.82rem;
+        }
+        .tab {
+          padding: 5px 12px;
+        }
+
+        /* Fatter touch target via pseudo */
+        .progress-container {
+          margin-bottom: 22px;
+        }
+
+        /* Larger touch targets */
+        .ctrl-btn {
+          width: 44px;
+          height: 44px;
+        }
+        .play-btn {
+          width: 58px;
+          height: 58px;
+        }
+        .controls {
+          gap: 12px;
+        }
+
+        /* Editor */
+        .load-btn {
+          align-self: stretch;
+          text-align: center;
+        }
+        #editor-view {
+          padding-bottom: env(safe-area-inset-bottom, 24px);
+        }
+
+        /* Onboarding */
+        #onboarding {
+          margin-top: 72px;
+          padding: 18px;
+        }
+        .code-block {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+        }
+        .code-block code {
+          font-size: 0.72rem;
+        }
+        .copy-btn {
+          align-self: flex-end;
+        }
+        #content-title {
+          margin-top: 72px;
+          padding: 0 16px;
+        }
       }
-      body    { padding: 0 16px; }
-      #header { padding: 16px 16px 14px; }
-      .logo-text, .logo-sub { font-size: 0.82rem; }
-      .tab    { padding: 5px 12px; }
 
-      /* Fatter touch target via pseudo */
-      .progress-container { margin-bottom: 22px; }
-
-      /* Larger touch targets */
-      .ctrl-btn { width: 44px; height: 44px; }
-      .play-btn { width: 58px; height: 58px; }
-      .controls { gap: 12px; }
-
-      /* Editor */
-      .load-btn    { align-self: stretch; text-align: center; }
-      #editor-view { padding-bottom: env(safe-area-inset-bottom, 24px); }
-    }
-
-    /* ── Very small phones ≤ 360px ─────────────────────────────── */
-    @media (max-width: 360px) {
-      :root { --word-size: clamp(1.2rem, 6vw, 1.5rem); }
-      .controls { gap: 8px; }
-      .tab { padding: 5px 10px; }
-    }
-
-    /* ── Landscape phones (short viewport) ─────────────────────── */
-    @media (max-height: 500px) and (orientation: landscape) {
-      :root {
-        --word-size:  clamp(1.4rem, 5vw, 2.2rem);
-        --redicle-h:  72px;
+      /* ── Very small phones ≤ 360px ─────────────────────────────── */
+      @media (max-width: 360px) {
+        :root {
+          --word-size: clamp(1.2rem, 6vw, 1.5rem);
+        }
+        .controls {
+          gap: 8px;
+        }
+        .tab {
+          padding: 5px 10px;
+        }
       }
-      #header             { padding: 10px 16px 9px; }
-      .redicle-container  { padding: 12px 0 10px; }
-      .progress-container { margin-bottom: 12px; }
-      .controls           { margin-bottom: 10px; gap: 10px; }
-      .play-btn           { width: 46px; height: 46px; }
-      .ctrl-btn           { width: 36px; height: 36px; }
-      .stats              { display: none; }
-    }
 
-    /* ── Safe area insets (notched phones) ─────────────────────── */
-    @supports (padding: env(safe-area-inset-bottom)) {
-      body { padding-bottom: env(safe-area-inset-bottom); }
-    }
-  </style>
-</head>
-<body data-view="reader">
+      /* ── Landscape phones (short viewport) ─────────────────────── */
+      @media (max-height: 500px) and (orientation: landscape) {
+        :root {
+          --word-size: clamp(1.4rem, 5vw, 2.2rem);
+          --redicle-h: 72px;
+        }
+        #header {
+          padding: 10px 16px 9px;
+        }
+        .redicle-container {
+          padding: 12px 0 10px;
+        }
+        .progress-container {
+          margin-bottom: 12px;
+        }
+        .controls {
+          margin-bottom: 10px;
+          gap: 10px;
+        }
+        .play-btn {
+          width: 46px;
+          height: 46px;
+        }
+        .ctrl-btn {
+          width: 36px;
+          height: 36px;
+        }
+        .stats {
+          display: none;
+        }
+      }
 
-  <!-- Header -->
-  <header id="header">
-    <div class="logo">
-      <span class="logo-icon">◉</span>
-      <span class="logo-text">still</span><span class="logo-sub">Reading</span>
-    </div>
-    <nav class="nav-tabs">
-      <button class="tab active" data-tab="reader" onclick="switchView('reader')">Read</button>
-      <button class="tab"        data-tab="editor" onclick="switchView('editor')">Edit</button>
-    </nav>
-  </header>
+      /* ── Safe area insets (notched phones) ─────────────────────── */
+      @supports (padding: env(safe-area-inset-bottom)) {
+        body {
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+      }
+    </style>
+  </head>
+  <body data-view="reader">
+    <!-- Header -->
+    <header id="header">
+      <div class="logo">
+        <span class="logo-icon">◉</span>
+        <span class="logo-text">still</span
+        ><span class="logo-sub">Reading</span>
+      </div>
+      <nav class="nav-tabs">
+        <button
+          class="tab active"
+          data-tab="reader"
+          onclick="switchView('reader')"
+        >
+          Read
+        </button>
+        <button class="tab" data-tab="editor" onclick="switchView('editor')">
+          Edit
+        </button>
+      </nav>
+    </header>
 
-  <!-- Reader view -->
-  <main id="reader-view">
-    <div class="redicle-container">
-      <div class="redicle">
-        <div class="guide-top"></div>
-        <div class="guide-bottom"></div>
-        <div class="word-wrapper">
-          <span class="word-text">
-            <span id="w-before"></span><span id="w-pivot"></span><span id="w-after"></span>
-          </span>
+    <!-- Reader view -->
+    <main id="reader-view">
+      <!-- Onboarding banner -->
+      <div id="onboarding">
+        <div class="onboarding-tabs">
+          <button class="onboarding-tab active" data-otab="human">Human</button>
+          <button class="onboarding-tab" data-otab="agent">Agent</button>
+        </div>
+        <div class="onboarding-panel active" id="panel-human">
+          <input
+            type="url"
+            id="onboarding-url"
+            class="onboarding-url"
+            placeholder="Paste a raw markdown URL..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="load-btn" id="onboarding-go">
+            Start still Reading →
+          </button>
+        </div>
+        <div class="onboarding-panel" id="panel-agent">
+          <p class="onboarding-desc">
+            Let your AI agent publish markdown as a still-reading link.
+          </p>
+          <div class="code-block">
+            <code
+              >npx skills add megabyte0x/stillReading --skill still-reading
+              -g</code
+            >
+            <button
+              class="copy-btn"
+              data-copy="npx skills add megabyte0x/stillReading --skill still-reading -g"
+            >
+              Copy
+            </button>
+          </div>
+          <span class="or-divider">or</span>
+          <div class="code-block">
+            <code>curl -fsSL https://stillreading.xyz/install.sh | bash</code>
+            <button
+              class="copy-btn"
+              data-copy="curl -fsSL https://stillreading.xyz/install.sh | bash"
+            >
+              Copy
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div id="progress-bar" class="progress-container">
-      <div id="progress-fill" class="progress-fill"></div>
-    </div>
+      <!-- Content title (shown when URL content is loaded) -->
+      <div id="content-title"></div>
 
-    <div class="controls">
-      <button class="ctrl-btn" onclick="adjustWpm(-50)" title="Slower (←)">−</button>
-      <button class="ctrl-btn" onclick="restart()"      title="Restart (R)">⟲</button>
-      <button class="play-btn" id="play-btn"            onclick="togglePlay()">▶</button>
-      <div class="wpm-display">
-        <span id="wpm-number">300</span>
-        <span class="wpm-label">wpm</span>
+      <div class="redicle-container">
+        <div class="redicle">
+          <div class="guide-top"></div>
+          <div class="guide-bottom"></div>
+          <div class="word-wrapper">
+            <span class="word-text">
+              <span id="w-before"></span><span id="w-pivot"></span
+              ><span id="w-after"></span>
+            </span>
+          </div>
+        </div>
       </div>
-      <button class="ctrl-btn" onclick="adjustWpm(50)"  title="Faster (→)">+</button>
-    </div>
 
-    <div class="stats">
-      <span id="stat-pos">0 / 0</span>
-      <span class="stat-divider">·</span>
-      <span id="stat-eta">0s remaining</span>
-    </div>
-  </main>
+      <div id="progress-bar" class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
 
-  <!-- Editor view -->
-  <section id="editor-view">
-    <div class="editor-header">
-      <p class="editor-label">Paste your Markdown below</p>
-      <span id="editor-word-count">0 words</span>
-    </div>
-    <textarea
-      id="markdown-input"
-      class="md-textarea"
-      spellcheck="false"
-      placeholder="# Paste your markdown here..."
-    ></textarea>
-    <button class="load-btn" onclick="loadAndRead()">Start Reading →</button>
-  </section>
+      <div class="controls">
+        <button class="ctrl-btn" onclick="adjustWpm(-50)" title="Slower (←)">
+          −
+        </button>
+        <button class="ctrl-btn" onclick="restart()" title="Restart (R)">
+          ⟲
+        </button>
+        <button class="play-btn" id="play-btn" onclick="togglePlay()">▶</button>
+        <div class="wpm-display">
+          <span id="wpm-number">300</span>
+          <span class="wpm-label">wpm</span>
+        </div>
+        <button class="ctrl-btn" onclick="adjustWpm(50)" title="Faster (→)">
+          +
+        </button>
+      </div>
 
-  <!-- WPM popup (shared, outside views) -->
-  <div id="wpm-popup" class="wpm-popup hidden"></div>
+      <div class="stats">
+        <span id="stat-pos">0 / 0</span>
+        <span class="stat-divider">·</span>
+        <span id="stat-eta">0s remaining</span>
+      </div>
+    </main>
 
-  <script>
-// =============================================================================
-// DOM REFS
-// =============================================================================
+    <!-- Editor view -->
+    <section id="editor-view">
+      <div class="editor-header">
+        <p class="editor-label">Paste your Markdown below</p>
+        <span id="editor-word-count">0 words</span>
+      </div>
+      <textarea
+        id="markdown-input"
+        class="md-textarea"
+        spellcheck="false"
+        placeholder="# Paste your markdown here..."
+      ></textarea>
+      <button class="load-btn" onclick="loadAndRead()">Start Reading →</button>
+    </section>
 
-const elBefore      = document.getElementById('w-before');
-const elPivot       = document.getElementById('w-pivot');
-const elAfter       = document.getElementById('w-after');
-const elWordText    = elBefore.parentElement; // .word-text positioned element
-const elProgressBar = document.getElementById('progress-bar');
-const elProgressFill= document.getElementById('progress-fill');
-const elPlayBtn     = document.getElementById('play-btn');
-const elWpmNumber   = document.getElementById('wpm-number');
-const elStatPos     = document.getElementById('stat-pos');
-const elStatEta     = document.getElementById('stat-eta');
-const elWpmPopup    = document.getElementById('wpm-popup');
-const elTextarea    = document.getElementById('markdown-input');
-const elEditorCount = document.getElementById('editor-word-count');
+    <!-- Footer -->
+    <footer class="site-footer">
+      <a href="https://github.com/megabyte0x/stillReading" target="_blank" rel="noopener noreferrer" title="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+      </a>
+    </footer>
 
-// =============================================================================
-// STATE
-// =============================================================================
+    <!-- WPM popup (shared, outside views) -->
+    <div id="wpm-popup" class="wpm-popup hidden"></div>
 
-let words   = [];
-let idx     = 0;
-let wpm     = 300;
-let playing = false;
-let timer   = null;
+    <script>
+      // =============================================================================
+      // DOM REFS
+      // =============================================================================
 
-// =============================================================================
-// ORP (Optimal Recognition Point)
-// =============================================================================
+      const elBefore = document.getElementById("w-before");
+      const elPivot = document.getElementById("w-pivot");
+      const elAfter = document.getElementById("w-after");
+      const elWordText = elBefore.parentElement; // .word-text positioned element
+      const elProgressBar = document.getElementById("progress-bar");
+      const elProgressFill = document.getElementById("progress-fill");
+      const elPlayBtn = document.getElementById("play-btn");
+      const elWpmNumber = document.getElementById("wpm-number");
+      const elStatPos = document.getElementById("stat-pos");
+      const elStatEta = document.getElementById("stat-eta");
+      const elWpmPopup = document.getElementById("wpm-popup");
+      const elTextarea = document.getElementById("markdown-input");
+      const elEditorCount = document.getElementById("editor-word-count");
+      const elOnboarding = document.getElementById("onboarding");
+      const elOnboardingUrl = document.getElementById("onboarding-url");
+      const elOnboardingGo = document.getElementById("onboarding-go");
+      const elContentTitle = document.getElementById("content-title");
 
-function getORP(word) {
-  const len = word.length;
-  if (len === 1)  return 0;
-  if (len <= 5)   return 1;
-  if (len <= 9)   return 2;
-  if (len <= 13)  return 3;
-  return 4;
-}
+      // =============================================================================
+      // STATE
+      // =============================================================================
 
-// =============================================================================
-// ADAPTIVE TIMING
-// =============================================================================
+      let words = [];
+      let idx = 0;
+      let wpm = 300;
+      let playing = false;
+      let timer = null;
 
-function getWordDelay(word, baseDelay) {
-  let multiplier = 1;
-  if (word.length > 8)  multiplier += 0.3;
-  if (word.length > 12) multiplier += 0.2;
-  if (/[.!?]$/.test(word))          multiplier += 1.2;
-  else if (/[,;:]$/.test(word))     multiplier += 0.5;
-  else if (/[-\u2013\u2014]$/.test(word)) multiplier += 0.3;
-  return baseDelay * multiplier;
-}
+      // =============================================================================
+      // ORP (Optimal Recognition Point)
+      // =============================================================================
 
-// =============================================================================
-// PARSER
-// =============================================================================
+      function getORP(word) {
+        const len = word.length;
+        if (len === 1) return 0;
+        if (len <= 5) return 1;
+        if (len <= 9) return 2;
+        if (len <= 13) return 3;
+        return 4;
+      }
 
-function parseMarkdown(md) {
-  return md
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/\*\*(.+?)\*\*/g, '$1')
-    .replace(/__(.+?)__/g, '$1')
-    .replace(/\*(.+?)\*/g, '$1')
-    .replace(/_(.+?)_/g, '$1')
-    .replace(/~~(.+?)~~/g, '$1')
-    .replace(/`([^`]+)`/g, '$1')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/^[-*+]\s+/gm, '')
-    .replace(/^\d+\.\s+/gm, '')
-    .replace(/^>\s+/gm, '')
-    .split(/\s+/)
-    .filter(w => w.length > 0);
-}
+      // =============================================================================
+      // ADAPTIVE TIMING
+      // =============================================================================
 
-// =============================================================================
-// SAMPLE CONTENT
-// =============================================================================
+      function getWordDelay(word, baseDelay) {
+        let multiplier = 1;
+        if (word.length > 8) multiplier += 0.3;
+        if (word.length > 12) multiplier += 0.2;
+        if (/[.!?]$/.test(word)) multiplier += 1.2;
+        else if (/[,;:]$/.test(word)) multiplier += 0.5;
+        else if (/[-\u2013\u2014]$/.test(word)) multiplier += 0.3;
+        return baseDelay * multiplier;
+      }
 
-const SAMPLE = `# The Art of Speed Reading
+      // =============================================================================
+      // PARSER
+      // =============================================================================
+
+      function parseMarkdown(md) {
+        return md
+          .replace(/^#{1,6}\s+/gm, "")
+          .replace(/\*\*(.+?)\*\*/g, "$1")
+          .replace(/__(.+?)__/g, "$1")
+          .replace(/\*(.+?)\*/g, "$1")
+          .replace(/_(.+?)_/g, "$1")
+          .replace(/~~(.+?)~~/g, "$1")
+          .replace(/`([^`]+)`/g, "$1")
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+          .replace(/^[-*+]\s+/gm, "")
+          .replace(/^\d+\.\s+/gm, "")
+          .replace(/^>\s+/gm, "")
+          .split(/\s+/)
+          .filter((w) => w.length > 0);
+      }
+
+      // =============================================================================
+      // SAMPLE CONTENT
+      // =============================================================================
+
+      const SAMPLE = `# The Art of Speed Reading
 
 Speed reading is a collection of techniques used to increase one's rate of reading without greatly reducing comprehension or retention. These methods typically involve visual guides, chunking text, and minimizing subvocalization.
 
@@ -606,231 +1016,318 @@ Start at a comfortable speed around 250 words per minute. Gradually increase as 
 
 The goal is not to race through text, but to find your optimal pace where speed and understanding coexist harmoniously.`;
 
-// =============================================================================
-// RENDER
-// =============================================================================
+      // =============================================================================
+      // RENDER
+      // =============================================================================
 
-function renderWord(word) {
-  const orp = getORP(word);
-  elBefore.textContent  = word.slice(0, orp);
-  elPivot.textContent   = word[orp] || '';
-  elAfter.textContent   = word.slice(orp + 1);
-  elPivot.style.opacity = '1';
-  alignPivot();
-}
+      function renderWord(word) {
+        const orp = getORP(word);
+        elBefore.textContent = word.slice(0, orp);
+        elPivot.textContent = word[orp] || "";
+        elAfter.textContent = word.slice(orp + 1);
+        elPivot.style.opacity = "1";
+        alignPivot();
+      }
 
-function renderIdle() {
-  elBefore.textContent  = '';
-  elPivot.textContent   = '▶';
-  elAfter.textContent   = '';
-  elPivot.style.opacity = '0.2';
-  alignPivot();
-}
+      function renderIdle() {
+        elBefore.textContent = "";
+        elPivot.textContent = "▶";
+        elAfter.textContent = "";
+        elPivot.style.opacity = "0.2";
+        alignPivot();
+      }
 
-// Shift .word-text so the centre of #w-pivot sits at left:50% of .word-wrapper.
-// offset = beforeWidth + half pivotWidth
-function alignPivot() {
-  const bw = elBefore.offsetWidth;
-  const pw = elPivot.offsetWidth;
-  elWordText.style.transform = `translateX(-${bw + pw / 2}px)`;
-}
+      // Shift .word-text so the centre of #w-pivot sits at left:50% of .word-wrapper.
+      // offset = beforeWidth + half pivotWidth
+      function alignPivot() {
+        const bw = elBefore.offsetWidth;
+        const pw = elPivot.offsetWidth;
+        elWordText.style.transform = `translateX(-${bw + pw / 2}px)`;
+      }
 
-function updateStats() {
-  const total   = words.length;
-  const current = Math.min(idx + 1, total);
-  elStatPos.textContent = total > 0 ? `${current} / ${total}` : '0 / 0';
+      function updateStats() {
+        const total = words.length;
+        const current = Math.min(idx + 1, total);
+        elStatPos.textContent = total > 0 ? `${current} / ${total}` : "0 / 0";
 
-  const wordsLeft   = Math.max(total - idx, 0);
-  const secondsLeft = Math.round((wordsLeft / wpm) * 60);
-  const minutes     = Math.floor(secondsLeft / 60);
-  const seconds     = secondsLeft % 60;
-  elStatEta.textContent = minutes > 0
-    ? `${minutes}m ${seconds}s remaining`
-    : `${secondsLeft}s remaining`;
+        const wordsLeft = Math.max(total - idx, 0);
+        const secondsLeft = Math.round((wordsLeft / wpm) * 60);
+        const minutes = Math.floor(secondsLeft / 60);
+        const seconds = secondsLeft % 60;
+        elStatEta.textContent =
+          minutes > 0
+            ? `${minutes}m ${seconds}s remaining`
+            : `${secondsLeft}s remaining`;
 
-  elProgressFill.style.width = total > 0 ? `${(idx / total) * 100}%` : '0%';
-}
+        elProgressFill.style.width =
+          total > 0 ? `${(idx / total) * 100}%` : "0%";
+      }
 
-// =============================================================================
-// PLAYBACK
-// =============================================================================
+      // =============================================================================
+      // PLAYBACK
+      // =============================================================================
 
-function tick() {
-  if (idx >= words.length) { stop(); return; }
-  renderWord(words[idx]);
-  updateStats();
-  const delay = getWordDelay(words[idx], 60000 / wpm);
-  idx++;
-  timer = setTimeout(tick, delay);
-}
+      function tick() {
+        if (idx >= words.length) {
+          stop();
+          return;
+        }
+        renderWord(words[idx]);
+        updateStats();
+        const delay = getWordDelay(words[idx], 60000 / wpm);
+        idx++;
+        timer = setTimeout(tick, delay);
+      }
 
-function stop() {
-  clearTimeout(timer);
-  timer   = null;
-  playing = false;
-  elPlayBtn.textContent = '▶';
-}
+      function stop() {
+        clearTimeout(timer);
+        timer = null;
+        playing = false;
+        elPlayBtn.textContent = "▶";
+      }
 
-function togglePlay() {
-  if (words.length === 0) return;
-  if (idx >= words.length) idx = 0;
-  playing = !playing;
-  if (playing) {
-    elPlayBtn.textContent = '❚❚';
-    tick();
-  } else {
-    elPlayBtn.textContent = '▶';
-    clearTimeout(timer);
-  }
-}
+      function togglePlay() {
+        if (words.length === 0) return;
+        if (idx >= words.length) idx = 0;
+        playing = !playing;
+        if (playing) {
+          elPlayBtn.textContent = "❚❚";
+          tick();
+        } else {
+          elPlayBtn.textContent = "▶";
+          clearTimeout(timer);
+        }
+      }
 
-function restart() {
-  stop();
-  idx = 0;
-  elProgressFill.style.width = '0%';
-  renderIdle();
-  updateStats();
-}
+      function restart() {
+        stop();
+        idx = 0;
+        elProgressFill.style.width = "0%";
+        renderIdle();
+        updateStats();
+      }
 
-function adjustWpm(delta) {
-  wpm = Math.min(1000, Math.max(50, wpm + delta));
-  elWpmNumber.textContent = wpm;
-  showWpmPopup();
-}
+      function adjustWpm(delta) {
+        wpm = Math.min(1000, Math.max(50, wpm + delta));
+        elWpmNumber.textContent = wpm;
+        showWpmPopup();
+      }
 
-function showWpmPopup() {
-  elWpmPopup.textContent = `${wpm} wpm`;
-  elWpmPopup.classList.remove('hidden');
-  void elWpmPopup.offsetWidth; // re-trigger animation
-  elWpmPopup.style.animation = 'none';
-  void elWpmPopup.offsetWidth;
-  elWpmPopup.style.animation = '';
-  setTimeout(() => elWpmPopup.classList.add('hidden'), 820);
-}
+      function showWpmPopup() {
+        elWpmPopup.textContent = `${wpm} wpm`;
+        elWpmPopup.classList.remove("hidden");
+        void elWpmPopup.offsetWidth; // re-trigger animation
+        elWpmPopup.style.animation = "none";
+        void elWpmPopup.offsetWidth;
+        elWpmPopup.style.animation = "";
+        setTimeout(() => elWpmPopup.classList.add("hidden"), 820);
+      }
 
-// =============================================================================
-// MARKDOWN LOADING
-// =============================================================================
+      // =============================================================================
+      // MARKDOWN LOADING
+      // =============================================================================
 
-function loadMarkdown(md) {
-  words = parseMarkdown(md);
-  idx   = 0;
-  stop();
-  renderIdle();
-  updateStats();
-  elEditorCount.textContent = `${words.length} words`;
-}
+      function loadMarkdown(md) {
+        words = parseMarkdown(md);
+        idx = 0;
+        stop();
+        renderIdle();
+        updateStats();
+        elEditorCount.textContent = `${words.length} words`;
+      }
 
-function loadAndRead() {
-  loadMarkdown(elTextarea.value);
-  switchView('reader');
-}
+      function loadAndRead() {
+        loadMarkdown(elTextarea.value);
+        switchView("reader");
+      }
 
-// =============================================================================
-// VIEW SWITCHING
-// =============================================================================
+      // =============================================================================
+      // VIEW SWITCHING
+      // =============================================================================
 
-function switchView(view) {
-  document.body.dataset.view = view;
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.tab === view);
-  });
-  if (view === 'editor') stop();
-}
+      function switchView(view) {
+        document.body.dataset.view = view;
+        document.querySelectorAll(".tab").forEach((tab) => {
+          tab.classList.toggle("active", tab.dataset.tab === view);
+        });
+        if (view === "editor") stop();
+      }
 
-// =============================================================================
-// EVENTS
-// =============================================================================
+      // =============================================================================
+      // EVENTS
+      // =============================================================================
 
-// Progress bar seek
-elProgressBar.addEventListener('click', function(e) {
-  if (words.length === 0) return;
-  const rect       = elProgressBar.getBoundingClientRect();
-  const pct        = (e.clientX - rect.left) / rect.width;
-  const wasPlaying = playing;
-  stop();
-  idx = Math.max(0, Math.min(Math.floor(pct * words.length), words.length - 1));
-  renderWord(words[idx]);
-  updateStats();
-  if (wasPlaying) {
-    playing = true;
-    elPlayBtn.textContent = '❚❚';
-    tick();
-  }
-});
+      // Progress bar seek
+      elProgressBar.addEventListener("click", function (e) {
+        if (words.length === 0) return;
+        const rect = elProgressBar.getBoundingClientRect();
+        const pct = (e.clientX - rect.left) / rect.width;
+        const wasPlaying = playing;
+        stop();
+        idx = Math.max(
+          0,
+          Math.min(Math.floor(pct * words.length), words.length - 1),
+        );
+        renderWord(words[idx]);
+        updateStats();
+        if (wasPlaying) {
+          playing = true;
+          elPlayBtn.textContent = "❚❚";
+          tick();
+        }
+      });
 
-// Editor live word count
-elTextarea.addEventListener('input', function() {
-  elEditorCount.textContent = `${parseMarkdown(elTextarea.value).length} words`;
-});
+      // Editor live word count
+      elTextarea.addEventListener("input", function () {
+        elEditorCount.textContent = `${parseMarkdown(elTextarea.value).length} words`;
+      });
 
-// Re-align on resize / orientation change
-window.addEventListener('resize', function() {
-  if (elBefore.textContent || elAfter.textContent || elPivot.textContent) alignPivot();
-});
+      // Re-align on resize / orientation change
+      window.addEventListener("resize", function () {
+        if (elBefore.textContent || elAfter.textContent || elPivot.textContent)
+          alignPivot();
+      });
 
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-  if (e.target === elTextarea) return;
-  if (e.code === 'Space')      { e.preventDefault(); togglePlay(); }
-  else if (e.code === 'ArrowLeft')  adjustWpm(-50);
-  else if (e.code === 'ArrowRight') adjustWpm(50);
-  else if (e.code === 'KeyR')       restart();
-});
+      // Keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        if (e.target === elTextarea || e.target === elOnboardingUrl) return;
+        if (e.code === "Space") {
+          e.preventDefault();
+          togglePlay();
+        } else if (e.code === "ArrowLeft") adjustWpm(-50);
+        else if (e.code === "ArrowRight") adjustWpm(50);
+        else if (e.code === "KeyR") restart();
+      });
 
-// =============================================================================
-// INIT
-// =============================================================================
+      // =============================================================================
+      // ONBOARDING
+      // =============================================================================
 
-(async function init() {
-  // Support both path-based and query parameter URLs:
-  //   path:  /https://example.com/article.md
-  //   query: ?url=https://example.com/article.md
-  // Browsers normalize // to / in paths, so restore the double slash
-  const raw = window.location.pathname.slice(1);
-  const queryUrl = new URLSearchParams(window.location.search).get('url');
-  const mdUrl = queryUrl
-    || (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, '$1/$2') : null);
+      // Tab switching
+      document.querySelectorAll(".onboarding-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".onboarding-tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".onboarding-panel")
+            .forEach((p) => p.classList.remove("active"));
+          tab.classList.add("active");
+          document
+            .getElementById("panel-" + tab.dataset.otab)
+            .classList.add("active");
+        });
+      });
 
-  if (mdUrl) {
-    try {
-      const res = await fetch(mdUrl);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const md = await res.text();
-      elTextarea.value = md;
-      loadMarkdown(md);
-      renderIdle();
-    } catch (err) {
-      console.error('Failed to load markdown from URL:', err);
-      elTextarea.value = '';
-      elTextarea.placeholder = `Failed to load content from:\n${mdUrl}\n\nPaste your markdown here instead...`;
-      loadMarkdown('');
-      switchView('editor');
-    }
-  } else {
-    elTextarea.value = SAMPLE;
-    loadMarkdown(SAMPLE);
-    renderIdle();
-  }
-})();
-  </script>
+      // Human tab: navigate to URL
+      function navigateToUrl() {
+        const url = elOnboardingUrl.value.trim();
+        if (!url) return;
+        window.location.href = "/" + url;
+      }
+      elOnboardingGo.addEventListener("click", navigateToUrl);
+      elOnboardingUrl.addEventListener("keydown", (e) => {
+        if (e.code === "Enter") navigateToUrl();
+      });
 
-  <!-- Vercel Web Analytics -->
-  <script>
-    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-  </script>
-  <script defer src="/_vercel/insights/script.js"></script>
+      // Agent tab: copy buttons
+      document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          navigator.clipboard.writeText(btn.dataset.copy);
+          const orig = btn.textContent;
+          btn.textContent = "Copied!";
+          setTimeout(() => {
+            btn.textContent = orig;
+          }, 1500);
+        });
+      });
 
-  <!--
+      function hideOnboarding(md) {
+        if (elOnboarding) elOnboarding.style.display = "none";
+        if (md && elContentTitle) {
+          const match = md.match(/^#\s+(.+)$/m);
+          if (match) {
+            const title = match[1].replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
+            if (title) {
+              elContentTitle.textContent = title;
+              elContentTitle.style.display = "block";
+            }
+          }
+        }
+      }
+
+      // =============================================================================
+      // INIT
+      // =============================================================================
+
+      (async function init() {
+        // Support both path-based and query parameter URLs:
+        //   path:  /https://example.com/article.md
+        //   query: ?url=https://example.com/article.md
+        // Browsers normalize // to / in paths, so restore the double slash
+        const raw = window.location.pathname.slice(1);
+        const queryUrl = new URLSearchParams(window.location.search).get("url");
+        const mdUrl =
+          queryUrl ||
+          (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, "$1/$2") : null);
+
+        if (mdUrl) {
+          try {
+            const res = await fetch(mdUrl);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const md = await res.text();
+            hideOnboarding(md);
+            elTextarea.value = md;
+            loadMarkdown(md);
+            renderIdle();
+          } catch (err) {
+            hideOnboarding();
+            console.error("Failed to load markdown from URL:", err);
+            elTextarea.value = "";
+            elTextarea.placeholder = `Failed to load content from:\n${mdUrl}\n\nPaste your markdown here instead...`;
+            loadMarkdown("");
+            switchView("editor");
+          }
+        } else {
+          elTextarea.value = SAMPLE;
+          loadMarkdown(SAMPLE);
+          renderIdle();
+        }
+      })();
+    </script>
+
+    <!-- Vercel Web Analytics -->
+    <script>
+      window.va =
+        window.va ||
+        function () {
+          (window.vaq = window.vaq || []).push(arguments);
+        };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+    <!--
     AI Agent: stillReading is an RSVP speed reader with an Agent Skill.
     Read the full skill at: https://stillreading.xyz/SKILL.md
     Install: npx skills add megabyte0x/stillReading --skill still-reading -g
     Or: curl -fsSL https://stillreading.xyz/install.sh | bash
   -->
-  <div aria-hidden="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">
-    AI Agent Instructions: stillReading is an RSVP speed reader that converts markdown into a word-by-word reading experience.
-    To use this tool, read the full Agent Skill at https://stillreading.xyz/SKILL.md for formatting rules, publishing steps, and URL construction.
-    Install as a skill: npx skills add megabyte0x/stillReading --skill still-reading -g
-  </div>
-</body>
+    <div
+      aria-hidden="true"
+      style="
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+      "
+    >
+      AI Agent Instructions: stillReading is an RSVP speed reader that converts
+      markdown into a word-by-word reading experience. To use this tool, read
+      the full Agent Skill at https://stillreading.xyz/SKILL.md for formatting
+      rules, publishing steps, and URL construction. Install as a skill: npx
+      skills add megabyte0x/stillReading --skill still-reading -g
+    </div>
+  </body>
 </html>
