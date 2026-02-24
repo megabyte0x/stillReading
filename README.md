@@ -35,6 +35,18 @@ Content is pre-loaded in the reader, ready to play.
 
 stillReading ships with a [SKILL.md](SKILL.md) compatible with [Anthropic Agent Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview). AI agents can publish markdown and construct a stillReading URL for users to speed-read.
 
+**Install as a skill:**
+
+```bash
+npx skills add megabyte0x/stillReading --skill still-reading -g
+```
+
+Or without npm:
+
+```bash
+curl -fsSL https://still-reading.vercel.app/install.sh | bash
+```
+
 See [SKILL.md](SKILL.md) for the full spec and formatting rules.
 
 ## Architecture

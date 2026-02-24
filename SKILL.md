@@ -7,6 +7,18 @@ description: Converts markdown content into an RSVP speed-reading experience. Pu
 
 RSVP (Rapid Serial Visual Presentation) speed reader that displays words one at a time with ORP (Optimal Recognition Point) highlighting. Deployed at `https://still-reading.vercel.app`.
 
+## Install
+
+Install as a skill if npm is available:
+```bash
+npx skills add megabyte0x/stillReading --skill still-reading -g
+```
+
+Otherwise:
+```bash
+curl -fsSL https://still-reading.vercel.app/install.sh | bash
+```
+
 ## How to use
 
 1. Write your content as raw markdown following the [content formatting rules](#content-formatting-rules) below
