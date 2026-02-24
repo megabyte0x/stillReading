@@ -115,13 +115,24 @@
       position: relative;
       width: 100%;
       max-width: 560px;
-      height: 120px;
+      height: clamp(80px, 20vw, 120px);
       display: flex;
       align-items: center;
       justify-content: center;
-      border-top: 2px solid #1c1c22;
-      border-bottom: 2px solid #1c1c22;
     }
+    /* Full-viewport-width border lines */
+    .redicle::before,
+    .redicle::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 1px;
+      background: #1c1c22;
+    }
+    .redicle::before { top: 0; }
+    .redicle::after  { bottom: 0; }
     .guide-top {
       position: absolute;
       left: 50%; top: -10px;
@@ -286,8 +297,7 @@
     /* Fluid word size — scales from ~29px on tiny screens to 56px on desktop */
     .word-text { font-size: clamp(1.8rem, 9vw, 3.5rem); letter-spacing: 0.04em; }
 
-    /* Fluid redicle height */
-    .redicle { height: clamp(80px, 20vw, 120px); }
+    /* (redicle height is clamp(80px,20vw,120px) on the base rule) */
 
     /* Fluid vertical breathing room */
     .redicle-container { padding: clamp(24px, 7vh, 60px) 0 clamp(20px, 5vh, 50px); }
