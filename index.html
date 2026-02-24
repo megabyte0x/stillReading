@@ -173,21 +173,26 @@
     .word-wrapper {
       position: relative;
       width: 100%;
+      height: 1.2em;
+      font-size: var(--word-size);
     }
     .word-text {
       font-family: var(--mono);
-      font-size: var(--word-size);
+      font-size: inherit;
       font-weight: 500;
       letter-spacing: 0.03em;
       color: var(--text);
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-      align-items: baseline;
-      width: 100%;
+      white-space: nowrap;
+      position: absolute;
+      /* Shift so the LEFT edge of #w-pivot sits at 50% of the wrapper,
+         then nudge left by half a character so the CENTRE of the pivot
+         aligns with the guide markers.  1ch ≈ character advance width
+         in a monospace font. */
+      left: 50%;
     }
-    #w-before { text-align: right; white-space: nowrap; }
-    #w-pivot  { color: var(--accent); font-weight: 700; white-space: nowrap; }
-    #w-after  { text-align: left;  white-space: nowrap; }
+    #w-before { /* flows inline, no special positioning needed */ }
+    #w-pivot  { color: var(--accent); font-weight: 700; }
+    #w-after  { /* flows inline */ }
 
     /* ── Progress bar ────────────────────────────────────────────── */
     .progress-container {
@@ -362,8 +367,9 @@
     /* ── Small phones ≤ 480px ──────────────────────────────────── */
     @media (max-width: 480px) {
       :root {
-        --word-size:  clamp(1.8rem, 9vw, 2.8rem);
-        --redicle-h:  clamp(90px, 24vw, 130px);
+        /* ~24px at 375px, ~27px at 430px — fits 16-char words in half-container */
+        --word-size:  clamp(1.4rem, 6.3vw, 1.8rem);
+        --redicle-h:  clamp(80px, 22vw, 120px);
       }
       body    { padding: 0 16px; }
       #header { padding: 16px 16px 14px; }
@@ -385,7 +391,7 @@
 
     /* ── Very small phones ≤ 360px ─────────────────────────────── */
     @media (max-width: 360px) {
-      :root { --word-size: clamp(1.6rem, 10vw, 2.4rem); }
+      :root { --word-size: clamp(1.2rem, 6vw, 1.5rem); }
       .controls { gap: 8px; }
       .tab { padding: 5px 10px; }
     }
@@ -487,7 +493,7 @@
 const elBefore      = document.getElementById('w-before');
 const elPivot       = document.getElementById('w-pivot');
 const elAfter       = document.getElementById('w-after');
-const elWordText    = elBefore.parentElement; // .word-text grid element
+const elWordText    = elBefore.parentElement; // .word-text positioned element
 const elProgressBar = document.getElementById('progress-bar');
 const elProgressFill= document.getElementById('progress-fill');
 const elPlayBtn     = document.getElementById('play-btn');
@@ -588,40 +594,23 @@ function renderWord(word) {
   elPivot.textContent   = word[orp] || '';
   elAfter.textContent   = word.slice(orp + 1);
   elPivot.style.opacity = '1';
-  fitWord();
+  alignPivot();
 }
 
 function renderIdle() {
-  elBefore.textContent      = '';
-  elPivot.textContent       = '▶';
-  elAfter.textContent       = '';
-  elPivot.style.opacity     = '0.2';
-  elWordText.style.fontSize = ''; // reset any word-level scaling
+  elBefore.textContent  = '';
+  elPivot.textContent   = '▶';
+  elAfter.textContent   = '';
+  elPivot.style.opacity = '0.2';
+  alignPivot();
 }
 
-/**
- * Scale the word font down if the longest half (before or after)
- * would overflow the available half-container width.
- * Reading: reset → measure at CSS size → shrink if needed.
- */
-function fitWord() {
-  // 1. Reset to CSS-defined size so we measure from the natural base
-  elWordText.style.fontSize = '';
-
-  // 2. Force reflow, then measure
-  const halfW   = elWordText.offsetWidth / 2;   // half the grid container
-  const pivotW  = elPivot.offsetWidth;           // width of the single ORP char
-  const beforeW = elBefore.scrollWidth;          // full text width, ignoring cell clip
-  const afterW  = elAfter.scrollWidth;
-
-  // Each side must fit: textWidth + pivotW/2 ≤ halfW
-  const needed = Math.max(beforeW, afterW) + pivotW / 2;
-
-  if (needed > halfW && halfW > 0) {
-    const base    = parseFloat(getComputedStyle(elWordText).fontSize);
-    const newSize = base * (halfW / needed) * 0.96; // 4% safety margin
-    elWordText.style.fontSize = newSize + 'px';
-  }
+// Shift .word-text so the centre of #w-pivot sits at left:50% of .word-wrapper.
+// offset = beforeWidth + half pivotWidth
+function alignPivot() {
+  const bw = elBefore.offsetWidth;
+  const pw = elPivot.offsetWidth;
+  elWordText.style.transform = `translateX(-${bw + pw / 2}px)`;
 }
 
 function updateStats() {
@@ -753,9 +742,9 @@ elTextarea.addEventListener('input', function() {
   elEditorCount.textContent = `${parseMarkdown(elTextarea.value).length} words`;
 });
 
-// Re-fit on resize / orientation change
+// Re-align on resize / orientation change
 window.addEventListener('resize', function() {
-  if (elBefore.textContent || elAfter.textContent) fitWord();
+  if (elBefore.textContent || elAfter.textContent || elPivot.textContent) alignPivot();
 });
 
 // Keyboard shortcuts
