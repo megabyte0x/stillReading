@@ -559,6 +559,37 @@
 
   <!-- Reader view -->
   <main id="reader-view">
+    <!-- Onboarding banner -->
+    <div id="onboarding">
+      <div class="onboarding-tabs">
+        <button class="onboarding-tab active" data-otab="human">Human</button>
+        <button class="onboarding-tab" data-otab="agent">Agent</button>
+      </div>
+      <div class="onboarding-panel active" id="panel-human">
+        <input
+          type="url"
+          id="onboarding-url"
+          class="onboarding-url"
+          placeholder="Paste a raw markdown URL..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="load-btn" id="onboarding-go">Start still Reading →</button>
+      </div>
+      <div class="onboarding-panel" id="panel-agent">
+        <p class="onboarding-desc">Let your AI agent publish markdown as a speed-reading link.</p>
+        <div class="code-block">
+          <code>npx skills add megabyte0x/stillReading --skill still-reading -g</code>
+          <button class="copy-btn" data-copy="npx skills add megabyte0x/stillReading --skill still-reading -g">Copy</button>
+        </div>
+        <span class="or-divider">or</span>
+        <div class="code-block">
+          <code>curl -fsSL https://stillreading.xyz/install.sh | bash</code>
+          <button class="copy-btn" data-copy="curl -fsSL https://stillreading.xyz/install.sh | bash">Copy</button>
+        </div>
+      </div>
+    </div>
+
     <div class="redicle-container">
       <div class="redicle">
         <div class="guide-top"></div>
