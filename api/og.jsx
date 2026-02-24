@@ -1,6 +1,6 @@
 import { ImageResponse } from '@vercel/og';
 
-export default async function handler() {
+export default function handler() {
   return new ImageResponse(
     (
       <div
@@ -15,26 +15,22 @@ export default async function handler() {
           fontFamily: 'monospace',
         }}
       >
-        {/* Redicle simulation */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0',
           }}
         >
-          {/* Top guide marker */}
           <div
             style={{
               width: '2px',
               height: '24px',
               backgroundColor: '#dc2626',
-              opacity: '0.6',
+              opacity: 0.6,
             }}
           />
 
-          {/* Redicle box */}
           <div
             style={{
               display: 'flex',
@@ -46,42 +42,40 @@ export default async function handler() {
               height: '160px',
             }}
           >
-            <span style={{ color: '#e4e4e7', fontSize: '72px', fontWeight: 500, letterSpacing: '0.03em' }}>
+            <span style={{ color: '#e4e4e7', fontSize: 72, fontWeight: 500, letterSpacing: '0.03em' }}>
               sti
             </span>
-            <span style={{ color: '#dc2626', fontSize: '72px', fontWeight: 700, letterSpacing: '0.03em' }}>
+            <span style={{ color: '#dc2626', fontSize: 72, fontWeight: 700, letterSpacing: '0.03em' }}>
               l
             </span>
-            <span style={{ color: '#e4e4e7', fontSize: '72px', fontWeight: 500, letterSpacing: '0.03em' }}>
+            <span style={{ color: '#e4e4e7', fontSize: 72, fontWeight: 500, letterSpacing: '0.03em' }}>
               lReading
             </span>
           </div>
 
-          {/* Bottom guide marker */}
           <div
             style={{
               width: '2px',
               height: '24px',
               backgroundColor: '#dc2626',
-              opacity: '0.6',
+              opacity: 0.6,
             }}
           />
         </div>
 
-        {/* Tagline */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            marginTop: '48px',
-            gap: '16px',
+            marginTop: 48,
+            gap: 16,
           }}
         >
-          <span style={{ color: '#52525b', fontSize: '28px' }}>
+          <span style={{ color: '#52525b', fontSize: 28 }}>
             Speed read anything. Word by word.
           </span>
-          <div style={{ display: 'flex', gap: '32px', color: '#3f3f46', fontSize: '20px' }}>
+          <div style={{ display: 'flex', gap: 32, color: '#3f3f46', fontSize: 20 }}>
             <span>1. Paste markdown</span>
             <span style={{ color: '#222228' }}>|</span>
             <span>2. Hit play</span>
