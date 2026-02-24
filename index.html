@@ -147,7 +147,7 @@
       /* pivot column is auto-width, flanking columns share space equally
          → pivot character always sits at the exact horizontal midpoint */
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: baseline;
       width: 100%;
     }
