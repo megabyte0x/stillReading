@@ -660,6 +660,9 @@ const elStatEta     = document.getElementById('stat-eta');
 const elWpmPopup    = document.getElementById('wpm-popup');
 const elTextarea    = document.getElementById('markdown-input');
 const elEditorCount = document.getElementById('editor-word-count');
+const elOnboarding    = document.getElementById('onboarding');
+const elOnboardingUrl = document.getElementById('onboarding-url');
+const elOnboardingGo  = document.getElementById('onboarding-go');
 
 // =============================================================================
 // STATE
@@ -906,12 +909,51 @@ window.addEventListener('resize', function() {
 
 // Keyboard shortcuts
 document.addEventListener('keydown', function(e) {
-  if (e.target === elTextarea) return;
+  if (e.target === elTextarea || e.target === elOnboardingUrl) return;
   if (e.code === 'Space')      { e.preventDefault(); togglePlay(); }
   else if (e.code === 'ArrowLeft')  adjustWpm(-50);
   else if (e.code === 'ArrowRight') adjustWpm(50);
   else if (e.code === 'KeyR')       restart();
 });
+
+// =============================================================================
+// ONBOARDING
+// =============================================================================
+
+// Tab switching
+document.querySelectorAll('.onboarding-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.onboarding-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.onboarding-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.otab).classList.add('active');
+  });
+});
+
+// Human tab: navigate to URL
+function navigateToUrl() {
+  const url = elOnboardingUrl.value.trim();
+  if (!url) return;
+  window.location.href = '/' + url;
+}
+elOnboardingGo.addEventListener('click', navigateToUrl);
+elOnboardingUrl.addEventListener('keydown', e => {
+  if (e.code === 'Enter') navigateToUrl();
+});
+
+// Agent tab: copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(btn.dataset.copy);
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  });
+});
+
+function hideOnboarding() {
+  if (elOnboarding) elOnboarding.style.display = 'none';
+}
 
 // =============================================================================
 // INIT
@@ -928,6 +970,7 @@ document.addEventListener('keydown', function(e) {
     || (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, '$1/$2') : null);
 
   if (mdUrl) {
+    hideOnboarding();
     try {
       const res = await fetch(mdUrl);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
