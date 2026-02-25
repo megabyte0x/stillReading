@@ -379,10 +379,10 @@ export default function RSVPReader({
               Edit
             </button>
           )}
-          <Link href="/readthis" className="tab" style={{ textDecoration: "none" }}>
-            you should read this👇🏻
-          </Link>
         </nav>
+        <Link href="/readthis" className="readthis-link" style={{ textDecoration: "none" }}>
+          you should read this 👇🏻
+        </Link>
       </header>
 
       {/* Reader view */}
