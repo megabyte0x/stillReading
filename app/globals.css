@@ -142,16 +142,11 @@
         color: #fafafa;
       }
 
-      .readthis-link {
-        font-family: var(--sans);
-        font-size: 0.72rem;
-        font-weight: 500;
-        color: var(--accent);
-        white-space: nowrap;
-        transition: opacity 0.15s ease;
-      }
-      .readthis-link:hover {
-        opacity: 0.8;
+      .readthis-tab {
+        font-size: 0.9rem !important;
+        padding: 4px 10px !important;
+        display: flex;
+        align-items: center;
       }
 
       /* ── View switching ──────────────────────────────────────────── */
