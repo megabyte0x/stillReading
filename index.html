@@ -1060,8 +1060,12 @@ The goal is not to race through text, but to find your optimal pace where speed 
         const current = Math.min(idx + 1, total);
         elStatPos.textContent = total > 0 ? `${current} / ${total}` : "0 / 0";
 
-        const wordsLeft = Math.max(total - idx, 0);
-        const secondsLeft = Math.round((wordsLeft / wpm) * 60);
+        const baseDelay = 60000 / wpm;
+        let msLeft = 0;
+        for (let i = idx; i < total; i++) {
+          msLeft += getWordDelay(words[i], baseDelay);
+        }
+        const secondsLeft = Math.round(msLeft / 1000);
         const minutes = Math.floor(secondsLeft / 60);
         const seconds = secondsLeft % 60;
         elStatEta.textContent =
@@ -1129,6 +1133,19 @@ The goal is not to race through text, but to find your optimal pace where speed 
         wpm = Math.min(1000, Math.max(50, wpm + delta));
         elWpmNumber.textContent = wpm;
         showWpmPopup();
+        if (playing) {
+          if (speechEnabled && speechDriving) {
+            // Restart speech from current word with new rate
+            speechSynthesis.cancel();
+            speechDriving = false;
+            startSpeechDriven(idx > 0 ? idx - 1 : idx);
+          } else if (!speechEnabled && timer) {
+            // Reschedule next tick with updated WPM delay
+            clearTimeout(timer);
+            const delay = getWordDelay(words[idx], 60000 / wpm);
+            timer = setTimeout(tick, delay);
+          }
+        }
       }
 
       function showWpmPopup() {
