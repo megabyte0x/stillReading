@@ -380,7 +380,7 @@ export default function RSVPReader({
             </button>
           )}
           <Link href="/readthis" className="tab readthis-tab" style={{ textDecoration: "none" }}>
-            📚
+            you should read this 👇🏻
           </Link>
         </nav>
       </header>

@@ -82,10 +82,11 @@
         left: 50%;
         transform: translateX(-50%);
         width: 100%;
-        max-width: 680px;
+        max-width: 900px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 16px;
         padding: 22px 24px 20px;
         border-bottom: 1px solid var(--border-dim);
         background: rgba(9, 9, 11, 0.88);
@@ -143,10 +144,7 @@
       }
 
       .readthis-tab {
-        font-size: 0.9rem !important;
-        padding: 4px 10px !important;
-        display: flex;
-        align-items: center;
+        white-space: nowrap;
       }
 
       /* ── View switching ──────────────────────────────────────────── */
