@@ -1,5 +1,0 @@
-{
-  "rewrites": [
-    { "source": "/((?!api|SKILL\\.md|install\\.sh|README\\.md).*)", "destination": "/index.html" }
-  ]
-}
