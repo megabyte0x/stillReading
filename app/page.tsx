@@ -1,3 +1,5 @@
+import RSVPReader from "@/components/RSVPReader";
+
 export default function Home() {
-  return <div>stillReading — porting in progress</div>;
+  return <RSVPReader showEditor={true} showOnboarding={true} />;
 }
