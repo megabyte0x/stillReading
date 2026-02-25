@@ -10,7 +10,39 @@
 
 ---
 
+## Required Skills — Use PROACTIVELY
+
+These skills MUST be invoked and followed during implementation. Read the AGENTS.md in each skill directory for the full compiled rules.
+
+### 1. `@.claude/skills/vercel-react-best-practices`
+**When:** Every task that writes React/Next.js code (Tasks 1, 3, 4, 5, 7, 8, 9, 10, 11).
+**Key rules to enforce:**
+- **CRITICAL — Eliminating Waterfalls:** Use `Promise.all()` for parallel fetches, Suspense boundaries for streaming, defer `await` into branches
+- **CRITICAL — Bundle Size:** Import directly (no barrel files), use `next/dynamic` for heavy components, defer third-party scripts
+- **HIGH — Server-Side:** Minimize data serialized to client components, parallelize server fetches, use `React.cache()` for dedup
+- **MEDIUM — Re-renders:** Use refs for transient values (playback state), functional setState, derive state during render not effects, hoist default non-primitive props
+
+### 2. `@.claude/skills/vercel-composition-patterns`
+**When:** Building component APIs (Tasks 3, 8, 10, 11).
+**Key rules to enforce:**
+- **Avoid boolean prop proliferation** — Use composition over boolean flags when component variants grow
+- **Compound components** — Use shared context for complex multi-part components (e.g., RSVPReader sub-parts)
+- **Children over render props** — Use children for composition
+- **React 19 APIs** — No `forwardRef`, use `use()` instead of `useContext()`
+
+### 3. `@.claude/skills/web-design-guidelines`
+**When:** After completing UI work (Tasks 4, 8, 9, 10). Fetch guidelines from `https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md` and review all new UI components for compliance.
+**Key areas:**
+- Accessibility (ARIA, keyboard nav, focus management)
+- Responsive design patterns
+- Animation and interaction quality
+- Semantic HTML structure
+
+---
+
 ## Task 1: Initialize Next.js Project
+
+> **Skills:** Invoke `@.claude/skills/vercel-react-best-practices` — follow `bundle-defer-third-party` for analytics, `server-` rules for layout setup.
 
 **Files:**
 - Create: `next.config.ts`
@@ -272,6 +304,8 @@ git add lib/rsvp-engine.ts && git commit -m "refactor: extract RSVP engine to pu
 ---
 
 ## Task 3: Build RSVPReader React Component
+
+> **Skills:** Invoke `@.claude/skills/vercel-react-best-practices` — follow `rerender-use-ref-transient-values` for playback state (idx, timer, playing), `rerender-functional-setstate` for WPM updates, `rerender-derived-state-no-effect` for computed values. Invoke `@.claude/skills/vercel-composition-patterns` — follow `architecture-avoid-boolean-props` and `patterns-children-over-render-props` for component API design.
 
 **Files:**
 - Create: `components/RSVPReader.tsx`
@@ -829,6 +863,8 @@ git add components/RSVPReader.tsx && git commit -m "feat: add RSVPReader React c
 
 ## Task 4: Port Home Page to Next.js
 
+> **Skills:** Invoke `@.claude/skills/web-design-guidelines` — after verifying feature parity, fetch the guidelines and review all UI components for accessibility, semantic HTML, keyboard nav, and responsive correctness.
+
 **Files:**
 - Modify: `app/page.tsx`
 - Modify: `app/globals.css` (ensure complete CSS is ported)
@@ -1129,6 +1165,8 @@ git add app/api/vote/route.ts && git commit -m "feat: add vote API route calling
 
 ## Task 8: Build /readthis Page Components
 
+> **Skills:** Invoke `@.claude/skills/vercel-composition-patterns` — follow `architecture-compound-components` for ArticleCard structure, `patterns-explicit-variants` for vote button states. Invoke `@.claude/skills/vercel-react-best-practices` — follow `rerender-memo` for card list optimization, `client-localstorage-schema` for vote storage, `rendering-conditional-render` for ternary conditionals.
+
 **Files:**
 - Create: `components/SearchBar.tsx`
 - Create: `components/TagFilter.tsx`
@@ -1279,6 +1317,8 @@ git add components/SearchBar.tsx components/TagFilter.tsx components/ArticleCard
 ---
 
 ## Task 9: Build /readthis Page
+
+> **Skills:** Invoke `@.claude/skills/vercel-react-best-practices` — follow `server-serialization` to minimize data passed to client component, `async-suspense-boundaries` for streaming the article list, `server-parallel-fetching` for data loading. Invoke `@.claude/skills/web-design-guidelines` — review the page for accessibility, responsive grid, keyboard navigation through cards.
 
 **Files:**
 - Create: `app/readthis/page.tsx`
@@ -1687,6 +1727,8 @@ git add app/readthis/ components/ app/globals.css && git commit -m "feat: build 
 ---
 
 ## Task 10: Build /readthis/[slug] Page and VoteModal
+
+> **Skills:** Invoke `@.claude/skills/vercel-react-best-practices` — follow `server-cache-react` for article fetch dedup in `generateMetadata` + page, `bundle-dynamic-imports` for VoteModal (only loaded on completion). Invoke `@.claude/skills/vercel-composition-patterns` — follow `patterns-children-over-render-props` for ArticleReader composition. Invoke `@.claude/skills/web-design-guidelines` — review modal for accessibility (focus trap, Escape to close, ARIA attributes).
 
 **Files:**
 - Create: `components/VoteModal.tsx`
