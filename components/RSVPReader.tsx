@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { getORP, getWordDelay, parseMarkdown, computeEta, formatEta, SAMPLE_CONTENT } from "@/lib/rsvp-engine";
 
 interface RSVPReaderProps {
@@ -378,6 +379,9 @@ export default function RSVPReader({
               Edit
             </button>
           )}
+          <Link href="/readthis" className="tab" style={{ textDecoration: "none" }}>
+            you should read this👇🏻
+          </Link>
         </nav>
       </header>
 
