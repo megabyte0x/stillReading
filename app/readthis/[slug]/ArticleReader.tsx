@@ -7,15 +7,16 @@ import type { Article } from "@/lib/types";
 
 interface ArticleReaderProps {
   article: Article;
+  markdown: string;
 }
 
-export default function ArticleReader({ article }: ArticleReaderProps) {
+export default function ArticleReader({ article, markdown }: ArticleReaderProps) {
   const [showVoteModal, setShowVoteModal] = useState(false);
 
   return (
     <>
       <RSVPReader
-        initialMarkdown={article.markdown_body}
+        initialMarkdown={markdown}
         contentTitle={article.title}
         showEditor={false}
         showOnboarding={false}

@@ -3,7 +3,8 @@ export interface Article {
   slug: string;
   title: string;
   source_url: string | null;
-  markdown_body: string;
+  markdown_body: string | null;
+  storage_path: string | null;
   tags: string[];
   word_count: number;
   upvotes: number;
