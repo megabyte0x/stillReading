@@ -145,6 +145,21 @@
 
       .readthis-tab {
         white-space: nowrap;
+        color: var(--accent) !important;
+      }
+      @media (max-width: 640px) {
+        #header {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+        }
+        .readthis-tab {
+          order: 3;
+          width: 100%;
+          text-align: center;
+          padding: 4px 0 !important;
+          font-size: 0.72rem !important;
+        }
       }
 
       /* ── View switching ──────────────────────────────────────────── */
