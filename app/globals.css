@@ -843,7 +843,7 @@
 .article-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 @media (min-width: 640px) {
   .article-grid {
@@ -859,36 +859,114 @@
 /* ── Article card ────────────────────────────────────────────── */
 .article-card {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border-dim);
-  border-radius: 10px;
-  transition: border-color 0.15s ease;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
 }
 .article-card:hover {
   border-color: var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(220, 38, 38, 0.08);
+  transform: translateY(-3px);
+}
+
+.article-card-accent {
+  width: 3px;
+  flex-shrink: 0;
+  background: var(--accent);
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}
+.article-card:hover .article-card-accent {
+  opacity: 1;
+}
+
+.article-card-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.article-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px 14px;
+  flex: 1;
+}
+
+.article-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.article-tag {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-dim);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.article-title {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fafafa;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.article-card:hover .article-title {
+  color: #fff;
+}
+
+.article-readtime {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.01em;
+}
+
+.article-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border-dim);
 }
 
 .article-vote {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
   flex-shrink: 0;
 }
 .vote-btn {
   background: transparent;
   border: none;
   color: var(--text-dim);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   cursor: pointer;
-  padding: 2px 6px;
-  transition: color 0.15s ease;
+  padding: 4px 5px;
+  border-radius: 4px;
+  transition: color 0.15s ease, background 0.15s ease;
+  line-height: 1;
 }
 .vote-btn:hover:not(:disabled) {
   color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
 }
 .vote-btn:disabled {
   cursor: default;
@@ -901,51 +979,25 @@
 }
 .vote-score {
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text);
-  min-width: 24px;
+  color: var(--text-muted);
+  min-width: 18px;
   text-align: center;
 }
 
-.article-info {
-  flex: 1;
-  min-width: 0;
-}
-.article-title {
-  font-family: var(--sans);
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 4px;
-}
-.article-readtime {
+.article-play-label {
   font-family: var(--mono);
-  font-size: 0.72rem;
-  color: var(--text-dim);
-}
-
-.article-play {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--accent);
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--accent);
-  font-size: 0.85rem;
-  text-decoration: none;
-  flex-shrink: 0;
-  transition: background 0.15s ease;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, letter-spacing 0.2s ease;
+  letter-spacing: 0.01em;
 }
-.article-play:hover {
-  background: var(--accent-dim);
+.article-card:hover .article-play-label {
+  opacity: 1;
+  letter-spacing: 0.04em;
 }
 
 /* ── Vote modal ──────────────────────────────────────────────── */
@@ -1011,8 +1063,14 @@
   .readthis-content {
     padding-top: 80px;
   }
-  .article-card {
-    padding: 12px;
-    gap: 10px;
+  .article-card-body {
+    padding: 14px 16px 12px;
+    gap: 8px;
+  }
+  .article-card-footer {
+    padding: 8px 16px;
+  }
+  .article-title {
+    font-size: 0.88rem;
   }
 }

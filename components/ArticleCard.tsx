@@ -31,33 +31,45 @@ export default function ArticleCard({ article }: ArticleCardProps) {
   }
 
   return (
-    <div className="article-card">
-      <div className="article-vote">
-        <button
-          className={`vote-btn vote-up ${voted === "up" ? "voted" : ""}`}
-          onClick={() => vote("up")}
-          disabled={voted !== null}
-          aria-label="Upvote"
-        >
-          ▲
-        </button>
-        <span className="vote-score">{score}</span>
-        <button
-          className={`vote-btn vote-down ${voted === "down" ? "voted" : ""}`}
-          onClick={() => vote("down")}
-          disabled={voted !== null}
-          aria-label="Downvote"
-        >
-          ▼
-        </button>
+    <Link href={`/readthis/${article.slug}`} className="article-card" style={{ textDecoration: "none" }}>
+      <div className="article-card-accent" />
+      <div className="article-card-inner">
+        <div className="article-card-body">
+          {article.tags.length > 0 && (
+            <div className="article-tags">
+              {article.tags.slice(0, 2).map((tag) => (
+                <span key={tag} className="article-tag">{tag}</span>
+              ))}
+            </div>
+          )}
+          <h3 className="article-title">{article.title}</h3>
+          <span className="article-readtime">{formatReadTime(article.word_count)} to stillread</span>
+        </div>
+        <div className="article-card-footer">
+          <div className="article-vote" onClick={(e) => e.preventDefault()}>
+            <button
+              className={`vote-btn vote-up ${voted === "up" ? "voted" : ""}`}
+              onClick={(e) => { e.preventDefault(); vote("up"); }}
+              disabled={voted !== null}
+              aria-label="Upvote"
+            >
+              ▲
+            </button>
+            <span className="vote-score">{score}</span>
+            <button
+              className={`vote-btn vote-down ${voted === "down" ? "voted" : ""}`}
+              onClick={(e) => { e.preventDefault(); vote("down"); }}
+              disabled={voted !== null}
+              aria-label="Downvote"
+            >
+              ▼
+            </button>
+          </div>
+          <span className="article-play-label" aria-label="Read article">
+            stillread →
+          </span>
+        </div>
       </div>
-      <div className="article-info">
-        <h3 className="article-title">{article.title}</h3>
-        <span className="article-readtime">{formatReadTime(article.word_count)} to stillread</span>
-      </div>
-      <Link href={`/readthis/${article.slug}`} className="article-play" aria-label="Read article">
-        ▶
-      </Link>
-    </div>
+    </Link>
   );
 }
