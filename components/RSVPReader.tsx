@@ -1,8 +1,15 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { getORP, getWordDelay, parseMarkdown, computeEta, formatEta, SAMPLE_CONTENT } from "@/lib/rsvp-engine";
+import {
+  getORP,
+  getWordDelay,
+  parseMarkdown,
+  computeEta,
+  formatEta,
+  SAMPLE_CONTENT,
+} from "@/lib/rsvp-engine";
 
 interface RSVPReaderProps {
   /** Pre-loaded markdown content. If provided, skips editor/URL loading. */
@@ -42,7 +49,8 @@ export default function RSVPReader({
   const [statEta, setStatEta] = useState("0s remaining");
   const [wpmPopupVisible, setWpmPopupVisible] = useState(false);
   const [speechEnabled, setSpeechEnabled] = useState(false);
-  const [showOnboardingBanner, setShowOnboardingBanner] = useState(showOnboarding);
+  const [showOnboardingBanner, setShowOnboardingBanner] =
+    useState(showOnboarding);
   const [displayTitle, setDisplayTitle] = useState(contentTitle || "");
 
   // Mutable refs for playback state (avoids stale closures in setTimeout)
@@ -56,8 +64,12 @@ export default function RSVPReader({
   const onCompleteRef = useRef(onComplete);
 
   // Keep refs in sync
-  useEffect(() => { onCompleteRef.current = onComplete; }, [onComplete]);
-  useEffect(() => { speechEnabledRef.current = speechEnabled; }, [speechEnabled]);
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+  useEffect(() => {
+    speechEnabledRef.current = speechEnabled;
+  }, [speechEnabled]);
 
   // ── Render helpers ──
 
@@ -68,15 +80,18 @@ export default function RSVPReader({
     wordTextRef.current.style.transform = `translateX(-${bw + pw / 2}px)`;
   }, []);
 
-  const renderWord = useCallback((word: string) => {
-    if (!beforeRef.current || !pivotRef.current || !afterRef.current) return;
-    const orp = getORP(word);
-    beforeRef.current.textContent = word.slice(0, orp);
-    pivotRef.current.textContent = word[orp] || "";
-    afterRef.current.textContent = word.slice(orp + 1);
-    pivotRef.current.style.opacity = "1";
-    alignPivot();
-  }, [alignPivot]);
+  const renderWord = useCallback(
+    (word: string) => {
+      if (!beforeRef.current || !pivotRef.current || !afterRef.current) return;
+      const orp = getORP(word);
+      beforeRef.current.textContent = word.slice(0, orp);
+      pivotRef.current.textContent = word[orp] || "";
+      afterRef.current.textContent = word.slice(orp + 1);
+      pivotRef.current.style.opacity = "1";
+      alignPivot();
+    },
+    [alignPivot],
+  );
 
   const renderIdle = useCallback(() => {
     if (!beforeRef.current || !pivotRef.current || !afterRef.current) return;
@@ -96,7 +111,8 @@ export default function RSVPReader({
     const secondsLeft = computeEta(w, i, wpmRef.current);
     setStatEta(formatEta(secondsLeft));
     if (progressFillRef.current) {
-      progressFillRef.current.style.width = total > 0 ? `${(i / total) * 100}%` : "0%";
+      progressFillRef.current.style.width =
+        total > 0 ? `${(i / total) * 100}%` : "0%";
     }
   }, []);
 
@@ -125,50 +141,54 @@ export default function RSVPReader({
     timerRef.current = setTimeout(tick, delay);
   }, [renderWord, updateStats, stop]);
 
-  const startSpeechDriven = useCallback((fromIdx: number) => {
-    if (!speechEnabledRef.current || fromIdx >= wordsRef.current.length) return;
-    if (typeof speechSynthesis === "undefined") return;
-    speechSynthesis.cancel();
-    speechDrivingRef.current = true;
+  const startSpeechDriven = useCallback(
+    (fromIdx: number) => {
+      if (!speechEnabledRef.current || fromIdx >= wordsRef.current.length)
+        return;
+      if (typeof speechSynthesis === "undefined") return;
+      speechSynthesis.cancel();
+      speechDrivingRef.current = true;
 
-    const w = wordsRef.current;
-    const wordOffsets: { charStart: number; wordIdx: number }[] = [];
-    let text = "";
-    for (let i = fromIdx; i < w.length; i++) {
-      wordOffsets.push({ charStart: text.length, wordIdx: i });
-      text += (i > fromIdx ? " " : "") + w[i];
-    }
-
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.rate = Math.min(Math.max(wpmRef.current / 250, 0.8), 2.5);
-
-    utt.onboundary = (e) => {
-      if (e.name !== "word" || !speechDrivingRef.current) return;
-      let matchIdx = fromIdx;
-      for (let i = wordOffsets.length - 1; i >= 0; i--) {
-        if (e.charIndex >= wordOffsets[i].charStart) {
-          matchIdx = wordOffsets[i].wordIdx;
-          break;
-        }
+      const w = wordsRef.current;
+      const wordOffsets: { charStart: number; wordIdx: number }[] = [];
+      let text = "";
+      for (let i = fromIdx; i < w.length; i++) {
+        wordOffsets.push({ charStart: text.length, wordIdx: i });
+        text += (i > fromIdx ? " " : "") + w[i];
       }
-      idxRef.current = matchIdx;
-      renderWord(w[idxRef.current]);
+
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.rate = Math.min(Math.max(wpmRef.current / 250, 0.8), 2.5);
+
+      utt.onboundary = (e) => {
+        if (e.name !== "word" || !speechDrivingRef.current) return;
+        let matchIdx = fromIdx;
+        for (let i = wordOffsets.length - 1; i >= 0; i--) {
+          if (e.charIndex >= wordOffsets[i].charStart) {
+            matchIdx = wordOffsets[i].wordIdx;
+            break;
+          }
+        }
+        idxRef.current = matchIdx;
+        renderWord(w[idxRef.current]);
+        updateStats();
+        idxRef.current++;
+      };
+
+      utt.onend = () => {
+        if (!speechDrivingRef.current) return;
+        speechDrivingRef.current = false;
+        idxRef.current = w.length;
+        stop();
+        onCompleteRef.current?.();
+      };
+
+      renderWord(w[fromIdx]);
       updateStats();
-      idxRef.current++;
-    };
-
-    utt.onend = () => {
-      if (!speechDrivingRef.current) return;
-      speechDrivingRef.current = false;
-      idxRef.current = w.length;
-      stop();
-      onCompleteRef.current?.();
-    };
-
-    renderWord(w[fromIdx]);
-    updateStats();
-    speechSynthesis.speak(utt);
-  }, [renderWord, updateStats, stop]);
+      speechSynthesis.speak(utt);
+    },
+    [renderWord, updateStats, stop],
+  );
 
   const togglePlay = useCallback(() => {
     const w = wordsRef.current;
@@ -198,24 +218,32 @@ export default function RSVPReader({
     updateStats();
   }, [stop, renderIdle, updateStats]);
 
-  const adjustWpm = useCallback((delta: number) => {
-    const newWpm = Math.min(1000, Math.max(50, wpmRef.current + delta));
-    wpmRef.current = newWpm;
-    setWpm(newWpm);
-    setWpmPopupVisible(true);
-    setTimeout(() => setWpmPopupVisible(false), 820);
-    if (playingRef.current) {
-      if (speechEnabledRef.current && speechDrivingRef.current) {
-        if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
-        speechDrivingRef.current = false;
-        startSpeechDriven(idxRef.current > 0 ? idxRef.current - 1 : idxRef.current);
-      } else if (!speechEnabledRef.current && timerRef.current) {
-        clearTimeout(timerRef.current);
-        const delay = getWordDelay(wordsRef.current[idxRef.current], 60000 / newWpm);
-        timerRef.current = setTimeout(tick, delay);
+  const adjustWpm = useCallback(
+    (delta: number) => {
+      const newWpm = Math.min(1000, Math.max(50, wpmRef.current + delta));
+      wpmRef.current = newWpm;
+      setWpm(newWpm);
+      setWpmPopupVisible(true);
+      setTimeout(() => setWpmPopupVisible(false), 820);
+      if (playingRef.current) {
+        if (speechEnabledRef.current && speechDrivingRef.current) {
+          if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
+          speechDrivingRef.current = false;
+          startSpeechDriven(
+            idxRef.current > 0 ? idxRef.current - 1 : idxRef.current,
+          );
+        } else if (!speechEnabledRef.current && timerRef.current) {
+          clearTimeout(timerRef.current);
+          const delay = getWordDelay(
+            wordsRef.current[idxRef.current],
+            60000 / newWpm,
+          );
+          timerRef.current = setTimeout(tick, delay);
+        }
       }
-    }
-  }, [tick, startSpeechDriven]);
+    },
+    [tick, startSpeechDriven],
+  );
 
   const toggleSpeech = useCallback(() => {
     const newVal = !speechEnabledRef.current;
@@ -236,38 +264,47 @@ export default function RSVPReader({
 
   // ── Load markdown ──
 
-  const loadMarkdown = useCallback((md: string) => {
-    const parsed = parseMarkdown(md);
-    wordsRef.current = parsed;
-    setWordsState(parsed);
-    idxRef.current = 0;
-    stop();
-    renderIdle();
-    updateStats();
-  }, [stop, renderIdle, updateStats]);
+  const loadMarkdown = useCallback(
+    (md: string) => {
+      const parsed = parseMarkdown(md);
+      wordsRef.current = parsed;
+      setWordsState(parsed);
+      idxRef.current = 0;
+      stop();
+      renderIdle();
+      updateStats();
+    },
+    [stop, renderIdle, updateStats],
+  );
 
   // ── Progress bar seek ──
 
-  const handleProgressClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const w = wordsRef.current;
-    if (w.length === 0 || !progressBarRef.current) return;
-    const rect = progressBarRef.current.getBoundingClientRect();
-    const pct = (e.clientX - rect.left) / rect.width;
-    const wasPlaying = playingRef.current;
-    stop();
-    idxRef.current = Math.max(0, Math.min(Math.floor(pct * w.length), w.length - 1));
-    renderWord(w[idxRef.current]);
-    updateStats();
-    if (wasPlaying) {
-      playingRef.current = true;
-      setPlaying(true);
-      if (speechEnabledRef.current) {
-        startSpeechDriven(idxRef.current);
-      } else {
-        tick();
+  const handleProgressClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const w = wordsRef.current;
+      if (w.length === 0 || !progressBarRef.current) return;
+      const rect = progressBarRef.current.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      const wasPlaying = playingRef.current;
+      stop();
+      idxRef.current = Math.max(
+        0,
+        Math.min(Math.floor(pct * w.length), w.length - 1),
+      );
+      renderWord(w[idxRef.current]);
+      updateStats();
+      if (wasPlaying) {
+        playingRef.current = true;
+        setPlaying(true);
+        if (speechEnabledRef.current) {
+          startSpeechDriven(idxRef.current);
+        } else {
+          tick();
+        }
       }
-    }
-  }, [stop, renderWord, updateStats, tick, startSpeechDriven]);
+    },
+    [stop, renderWord, updateStats, tick, startSpeechDriven],
+  );
 
   // ── Keyboard shortcuts ──
 
@@ -275,8 +312,10 @@ export default function RSVPReader({
     function handleKey(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "TEXTAREA" || tag === "INPUT") return;
-      if (e.code === "Space") { e.preventDefault(); togglePlay(); }
-      else if (e.code === "ArrowLeft") adjustWpm(-50);
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === "ArrowLeft") adjustWpm(-50);
       else if (e.code === "ArrowRight") adjustWpm(50);
       else if (e.code === "KeyR") restart();
       else if (e.code === "KeyS") toggleSpeech();
@@ -288,7 +327,9 @@ export default function RSVPReader({
   // ── Resize handler ──
 
   useEffect(() => {
-    function onResize() { alignPivot(); }
+    function onResize() {
+      alignPivot();
+    }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [alignPivot]);
@@ -302,7 +343,9 @@ export default function RSVPReader({
       if (!contentTitle) {
         const match = initialMarkdown.match(/^#\s+(.+)$/m);
         if (match) {
-          const title = match[1].replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "").trim();
+          const title = match[1]
+            .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "")
+            .trim();
           if (title) setDisplayTitle(title);
         }
       }
@@ -313,7 +356,9 @@ export default function RSVPReader({
     // URL-based loading (home page only)
     const raw = window.location.pathname.slice(1);
     const queryUrl = new URLSearchParams(window.location.search).get("url");
-    const mdUrl = queryUrl || (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, "$1/$2") : null);
+    const mdUrl =
+      queryUrl ||
+      (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, "$1/$2") : null);
 
     if (mdUrl) {
       fetch(mdUrl)
@@ -325,7 +370,12 @@ export default function RSVPReader({
           setShowOnboardingBanner(false);
           const match = md.match(/^#\s+(.+)$/m);
           if (match) {
-            const title = match[1].replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, "").trim();
+            const title = match[1]
+              .replace(
+                /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
+                "",
+              )
+              .trim();
             if (title) setDisplayTitle(title);
           }
           setEditorText(md);
@@ -349,20 +399,32 @@ export default function RSVPReader({
 
   // ── View switching ──
 
-  const switchView = useCallback((v: "reader" | "editor") => {
-    setView(v);
-    if (v === "editor") stop();
-  }, [stop]);
+  const switchView = useCallback(
+    (v: "reader" | "editor") => {
+      setView(v);
+      if (v === "editor") stop();
+    },
+    [stop],
+  );
 
   const loadAndRead = useCallback(() => {
     loadMarkdown(editorText);
     switchView("reader");
   }, [editorText, loadMarkdown, switchView]);
 
+  const editorWordCount = useMemo(
+    () => parseMarkdown(editorText).length,
+    [editorText],
+  );
+  const isReaderFocusMode = view === "reader" && !showOnboardingBanner;
+
   // ── Render ──
 
   return (
-    <div data-view={view} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div
+      data-view={view}
+      className={`rsvp-shell${isReaderFocusMode ? " rsvp-shell-focus" : ""}`}
+    >
       {/* Header */}
       <header id="header">
         <div className="logo">
@@ -371,15 +433,25 @@ export default function RSVPReader({
           <span className="logo-sub">Reading</span>
         </div>
         <nav className="nav-tabs">
-          <button className={`tab ${view === "reader" ? "active" : ""}`} onClick={() => switchView("reader")}>
+          <button
+            className={`tab ${view === "reader" ? "active" : ""}`}
+            onClick={() => switchView("reader")}
+          >
             Read
           </button>
           {showEditor && (
-            <button className={`tab ${view === "editor" ? "active" : ""}`} onClick={() => switchView("editor")}>
+            <button
+              className={`tab ${view === "editor" ? "active" : ""}`}
+              onClick={() => switchView("editor")}
+            >
               Edit
             </button>
           )}
-          <Link href="/readthis" className="tab readthis-tab" style={{ textDecoration: "none" }}>
+          <Link
+            href="/readthis"
+            className="tab readthis-tab"
+            style={{ textDecoration: "none" }}
+          >
             you should read this 👇🏻
           </Link>
         </nav>
@@ -387,13 +459,23 @@ export default function RSVPReader({
 
       {/* Reader view */}
       {view === "reader" && (
-        <main id="reader-view">
+        <main
+          id="reader-view"
+          className={
+            showOnboardingBanner && showOnboarding
+              ? "reader-with-onboarding"
+              : "reader-focused"
+          }
+        >
           {/* Onboarding */}
           {showOnboardingBanner && showOnboarding && <Onboarding />}
 
           {/* Content title */}
           {displayTitle && !showOnboardingBanner && (
-            <div id="content-title" style={{ display: "block" }}>{displayTitle}</div>
+            <div id="content-title">
+              <span className="content-title-kicker">Now Reading</span>
+              <span className="content-title-text">{displayTitle}</span>
+            </div>
           )}
 
           <div className="redicle-container">
@@ -410,51 +492,113 @@ export default function RSVPReader({
             </div>
           </div>
 
-          <div className="progress-container" ref={progressBarRef} onClick={handleProgressClick}>
-            <div className="progress-fill" ref={progressFillRef} />
-          </div>
-
-          <div className="controls">
-            <button className="ctrl-btn" onClick={() => adjustWpm(-50)} title="Slower (←)">−</button>
-            <button className="ctrl-btn" onClick={restart} title="Restart (R)">⟲</button>
-            <button className="play-btn" onClick={togglePlay}>
-              {playing ? "❚❚" : "▶"}
-            </button>
-            <div className="wpm-display">
-              <span id="wpm-number">{wpm}</span>
-              <span className="wpm-label">wpm</span>
-            </div>
-            <button className="ctrl-btn" onClick={() => adjustWpm(50)} title="Faster (→)">+</button>
-            <button
-              className="ctrl-btn"
-              onClick={toggleSpeech}
-              title="Speech (S)"
-              style={{
-                color: speechEnabled ? "var(--accent)" : undefined,
-                borderColor: speechEnabled ? "var(--accent)" : undefined,
-              }}
+          <div className="reader-console">
+            <div
+              className="progress-container"
+              ref={progressBarRef}
+              onClick={handleProgressClick}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                {!speechEnabled && <line x1="23" y1="9" x2="17" y2="15" />}
-              </svg>
-            </button>
-          </div>
+              <div className="progress-fill" ref={progressFillRef} />
+            </div>
 
-          <div className="stats">
-            <span id="stat-pos">{statPos}</span>
-            <span className="stat-divider">·</span>
-            <span id="stat-eta">{statEta}</span>
+            <div className="controls">
+              <div className="console-toolbar">
+                <div className="stats" aria-live="polite">
+                  <span id="stat-pos">{statPos}</span>
+                  <span className="stat-divider">·</span>
+                  <span id="stat-eta">{statEta}</span>
+                </div>
+                <div
+                  className="speed-controls"
+                  role="group"
+                  aria-label="Reading speed controls"
+                >
+                  <button
+                    type="button"
+                    className="speed-btn"
+                    onClick={() => adjustWpm(-50)}
+                    title="Slower (←)"
+                    aria-label="Decrease speed by 50 words per minute"
+                  >
+                    −
+                  </button>
+                  <div
+                    className="wpm-display"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
+                    <span id="wpm-number">{wpm}</span>
+                    <span className="wpm-label">wpm</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="speed-btn"
+                    onClick={() => adjustWpm(50)}
+                    title="Faster (→)"
+                    aria-label="Increase speed by 50 words per minute"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="transport-row">
+                <button
+                  type="button"
+                  className="ctrl-btn restart-btn"
+                  onClick={restart}
+                  title="Restart (R)"
+                  aria-label="Restart reading from the beginning"
+                >
+                  <span className="btn-icon" aria-hidden="true">⟲</span>
+                </button>
+                <button
+                  type="button"
+                  className="play-btn"
+                  onClick={togglePlay}
+                  aria-label={playing ? "Pause playback" : "Start playback"}
+                >
+                  <span className="play-icon" aria-hidden="true">
+                    {playing ? "❚❚" : "▶"}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className={`ctrl-btn voice-btn ${speechEnabled ? "is-active" : ""}`}
+                  onClick={toggleSpeech}
+                  title="Speech (S)"
+                  aria-label={
+                    speechEnabled ? "Disable speech mode" : "Enable speech mode"
+                  }
+                  aria-pressed={speechEnabled}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                    {!speechEnabled && <line x1="23" y1="9" x2="17" y2="15" />}
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </main>
       )}
 
       {/* Editor view */}
       {view === "editor" && showEditor && (
-        <section id="editor-view" style={{ display: "flex" }}>
+        <section id="editor-view">
           <div className="editor-header">
             <p className="editor-label">Paste your Markdown below</p>
-            <span id="editor-word-count">{parseMarkdown(editorText).length} words</span>
+            <span id="editor-word-count">{editorWordCount} words</span>
           </div>
           <textarea
             className="md-textarea"
@@ -463,19 +607,26 @@ export default function RSVPReader({
             value={editorText}
             onChange={(e) => setEditorText(e.target.value)}
           />
-          <button className="load-btn" onClick={loadAndRead}>Start Reading →</button>
+          <button className="load-btn" onClick={loadAndRead}>
+            Start Reading →
+          </button>
         </section>
       )}
 
       {/* WPM popup */}
-      {wpmPopupVisible && (
-        <div className="wpm-popup">{wpm} wpm</div>
-      )}
+      {wpmPopupVisible && <div className="wpm-popup">{wpm} wpm</div>}
 
       {/* Footer */}
       <footer className="site-footer">
-        <a href="https://github.com/megabyte0x/stillReading" target="_blank" rel="noopener noreferrer" title="GitHub">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12" /></svg>
+        <a
+          href="https://github.com/megabyte0x/stillReading"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="GitHub"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12" />
+          </svg>
         </a>
       </footer>
     </div>
@@ -497,41 +648,96 @@ function Onboarding() {
     navigator.clipboard.writeText(text);
     const orig = btn.textContent;
     btn.textContent = "Copied!";
-    setTimeout(() => { btn.textContent = orig; }, 1500);
+    setTimeout(() => {
+      btn.textContent = orig;
+    }, 1500);
   }
 
   return (
     <div id="onboarding">
+      <div className="onboarding-intro">
+        <p className="onboarding-kicker">Focus Mode Reader</p>
+        <h2 className="onboarding-title">
+          Enter your markdown link and read without noise.
+        </h2>
+      </div>
       <div className="onboarding-tabs">
-        <button className={`onboarding-tab ${activeTab === "human" ? "active" : ""}`} onClick={() => setActiveTab("human")}>Human</button>
-        <button className={`onboarding-tab ${activeTab === "agent" ? "active" : ""}`} onClick={() => setActiveTab("agent")}>Agent</button>
+        <button
+          type="button"
+          className={`onboarding-tab ${activeTab === "human" ? "active" : ""}`}
+          onClick={() => setActiveTab("human")}
+        >
+          Human
+        </button>
+        <button
+          type="button"
+          className={`onboarding-tab ${activeTab === "agent" ? "active" : ""}`}
+          onClick={() => setActiveTab("agent")}
+        >
+          Agent
+        </button>
       </div>
       {activeTab === "human" && (
         <div className="onboarding-panel active">
-          <input
-            type="url"
-            className="onboarding-url"
-            placeholder="Paste a raw markdown URL..."
-            autoComplete="off"
-            spellCheck={false}
-            value={urlValue}
-            onChange={(e) => setUrlValue(e.target.value)}
-            onKeyDown={(e) => { if (e.code === "Enter") navigateToUrl(); }}
-          />
-          <button className="load-btn" onClick={navigateToUrl}>Start still Reading →</button>
+          <p className="onboarding-desc">
+            Paste a public raw markdown URL to start reading immediately.
+          </p>
+          <div className="onboarding-action-row">
+            <input
+              type="url"
+              className="onboarding-url"
+              placeholder="Paste a raw markdown URL..."
+              autoComplete="off"
+              spellCheck={false}
+              value={urlValue}
+              onChange={(e) => setUrlValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.code === "Enter") navigateToUrl();
+              }}
+            />
+            <button type="button" className="load-btn" onClick={navigateToUrl}>
+              read
+            </button>
+          </div>
         </div>
       )}
       {activeTab === "agent" && (
         <div className="onboarding-panel active">
-          <p className="onboarding-desc">Let your AI agent publish markdown as a still-reading link.</p>
+          <p className="onboarding-desc">
+            Let your AI agent publish markdown as a still-reading link.
+          </p>
           <div className="code-block">
-            <code>npx skills add megabyte0x/stillReading --skill still-reading -g</code>
-            <button className="copy-btn" onClick={(e) => copyToClipboard("npx skills add megabyte0x/stillReading --skill still-reading -g", e.currentTarget)}>Copy</button>
+            <code>
+              npx skills add megabyte0x/stillReading --skill still-reading -g
+            </code>
+            <button
+              type="button"
+              className="copy-btn"
+              onClick={(e) =>
+                copyToClipboard(
+                  "npx skills add megabyte0x/stillReading --skill still-reading -g",
+                  e.currentTarget,
+                )
+              }
+            >
+              Copy
+            </button>
           </div>
           <span className="or-divider">or</span>
           <div className="code-block">
             <code>curl -fsSL https://stillreading.xyz/install.sh | bash</code>
-            <button className="copy-btn" onClick={(e) => copyToClipboard("curl -fsSL https://stillreading.xyz/install.sh | bash", e.currentTarget)}>Copy</button>
+            <button
+              type="button"
+              className="copy-btn"
+              onClick={(e) =>
+                copyToClipboard(
+                  "curl -fsSL https://stillreading.xyz/install.sh | bash",
+                  e.currentTarget,
+                )
+              }
+            >
+              Copy
+            </button>
           </div>
         </div>
       )}

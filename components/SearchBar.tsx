@@ -15,14 +15,23 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   }, [query, onSearch]);
 
   return (
-    <input
-      type="text"
-      className="search-bar"
-      placeholder="Search articles..."
-      autoComplete="off"
-      spellCheck={false}
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-    />
+    <label className="search-shell">
+      <span className="search-icon" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="none">
+          <circle cx="8.25" cy="8.25" r="5.25" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M12.5 12.5L16.5 16.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </span>
+      <input
+        type="text"
+        className="search-bar"
+        placeholder="Search by title..."
+        autoComplete="off"
+        spellCheck={false}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        aria-label="Search articles by title"
+      />
+    </label>
   );
 }

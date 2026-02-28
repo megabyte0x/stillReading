@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
 import TagFilter from "@/components/TagFilter";
@@ -10,6 +10,11 @@ import type { Article } from "@/lib/types";
 interface ReadThisClientProps {
   articles: Article[];
   allTags: string[];
+}
+
+function estimateReadingMinutes(totalWords: number) {
+  if (totalWords <= 0) return 0;
+  return Math.max(1, Math.round(totalWords / 230));
 }
 
 export default function ReadThisClient({ articles, allTags }: ReadThisClientProps) {
@@ -30,11 +35,25 @@ export default function ReadThisClient({ articles, allTags }: ReadThisClientProp
     setActiveTags([]);
   }, []);
 
-  const filtered = articles.filter((a) => {
-    const matchesSearch = searchQuery === "" || a.title.toLowerCase().includes(searchQuery);
-    const matchesTags = activeTags.length === 0 || activeTags.every((t) => a.tags.includes(t));
-    return matchesSearch && matchesTags;
-  });
+  const filtered = useMemo(
+    () =>
+      articles.filter((a) => {
+        const matchesSearch = searchQuery === "" || a.title.toLowerCase().includes(searchQuery);
+        const matchesTags = activeTags.length === 0 || activeTags.every((t) => a.tags.includes(t));
+        return matchesSearch && matchesTags;
+      }),
+    [articles, searchQuery, activeTags]
+  );
+
+  const totalMinutes = useMemo(
+    () => estimateReadingMinutes(articles.reduce((sum, article) => sum + article.word_count, 0)),
+    [articles]
+  );
+
+  const filteredMinutes = useMemo(
+    () => estimateReadingMinutes(filtered.reduce((sum, article) => sum + article.word_count, 0)),
+    [filtered]
+  );
 
   return (
     <div className="readthis-container">
@@ -52,14 +71,42 @@ export default function ReadThisClient({ articles, allTags }: ReadThisClientProp
       </header>
 
       <div className="readthis-content">
-        <h1 className="readthis-heading">These are real good ones!</h1>
-        <SearchBar onSearch={handleSearch} />
-        <TagFilter tags={allTags} activeTags={activeTags} onToggle={handleToggleTag} onClear={handleClearTags} />
+        <section className="readthis-hero">
+          <p className="readthis-kicker">Curated Reading Queue</p>
+          <h1 className="readthis-heading">Pick your next high-signal read in seconds.</h1>
+          <p className="readthis-subheading">
+            Better contrast, faster scanning, and focused filters so you can spend less time searching and more time reading.
+          </p>
+          <div className="readthis-metrics">
+            <div className="readthis-metric">
+              <span className="readthis-metric-label">Articles</span>
+              <span className="readthis-metric-value">{filtered.length}</span>
+            </div>
+            <div className="readthis-metric">
+              <span className="readthis-metric-label">Reading time</span>
+              <span className="readthis-metric-value">~{filteredMinutes}m</span>
+            </div>
+            <div className="readthis-metric">
+              <span className="readthis-metric-label">Library size</span>
+              <span className="readthis-metric-value">{articles.length} items</span>
+            </div>
+          </div>
+          {filtered.length !== articles.length && (
+            <p className="readthis-results">
+              Showing {filtered.length} of {articles.length} articles ({filteredMinutes}m of ~{totalMinutes}m)
+            </p>
+          )}
+        </section>
+
+        <section className="readthis-controls" aria-label="Article filters">
+          <SearchBar onSearch={handleSearch} />
+          <TagFilter tags={allTags} activeTags={activeTags} onToggle={handleToggleTag} onClear={handleClearTags} />
+        </section>
 
         {filtered.length > 0 ? (
           <div className="article-grid">
-            {filtered.map((article) => (
-              <ArticleCard key={article.id} article={article} />
+            {filtered.map((article, index) => (
+              <ArticleCard key={article.id} article={article} rank={index + 1} />
             ))}
           </div>
         ) : (

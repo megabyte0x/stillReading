@@ -3,3 +3,4 @@ node_modules
 .worktrees
 .next
 .env*.local
+add-article.sh
