@@ -57,6 +57,20 @@ Single-file vanilla HTML/CSS/JS — no framework, no build step, no bundler. The
 
 Open `index.html` in a browser. No install, no build.
 
+## Launch Video (Remotion)
+
+Create and export the feature launch video for the "You Should Read This" page:
+
+```bash
+npm run video:studio
+npm run video:render
+npm run video:render:hq
+npm run video:render:4k
+```
+
+Composition id: `ReadThisLaunchVideo`  
+Entrypoint: `remotion/index.ts`
+
 ## Deployment
 
 ```bash

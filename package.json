@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "video:studio": "remotion studio remotion/index.ts",
+    "video:render": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch.mp4",
+    "video:render:hq": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch-hq.mp4 --crf=15 --x264-preset=slow --pixel-format=yuv420p --overwrite",
+    "video:render:4k": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch-4k.mp4 --scale=2 --crf=16 --x264-preset=slow --pixel-format=yuv420p --overwrite"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
@@ -18,5 +22,11 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@remotion/cli": "^4.0.429",
+    "@remotion/google-fonts": "^4.0.429",
+    "@remotion/transitions": "^4.0.429",
+    "remotion": "^4.0.429"
   }
 }
