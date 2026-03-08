@@ -361,7 +361,7 @@ export default function RSVPReader({
       (raw.length > 0 ? raw.replace(/^(https?:\/)([^/])/, "$1/$2") : null);
 
     if (mdUrl) {
-      fetch(mdUrl)
+      fetch(`/api/load-markdown?url=${encodeURIComponent(mdUrl)}`)
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.text();
@@ -641,7 +641,7 @@ function Onboarding() {
   function navigateToUrl() {
     const url = urlValue.trim();
     if (!url) return;
-    window.location.href = "/" + url;
+    window.location.href = "/?url=" + encodeURIComponent(url);
   }
 
   function copyToClipboard(text: string, btn: HTMLButtonElement) {
