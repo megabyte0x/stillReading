@@ -1729,6 +1729,24 @@
   color: var(--text-muted);
 }
 
+/* ── Skeleton loading ─────────────────────────────────────── */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.12; }
+}
+.skeleton {
+  background: var(--text-muted);
+  border-radius: 4px;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+.skeleton-card {
+  background: var(--surface);
+  border: 1px solid var(--border-dim);
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 180px;
+}
+
 /* ── Readthis responsive ─────────────────────────────────────── */
 @media (max-width: 960px) {
   .readthis-metrics {

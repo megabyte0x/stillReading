@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
 import type { Article } from "@/lib/types";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import ReadThisClient from "./ReadThisClient";
 
 export const metadata: Metadata = {
@@ -58,7 +60,36 @@ export default async function ReadThisPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ReadThisClient articles={articles ?? []} allTags={allTags} />
+      <div className="readthis-container">
+        <Header activePage="readthis" />
+        <div className="readthis-content">
+          <section className="readthis-hero">
+            <p className="readthis-kicker">Curated Reading Queue</p>
+            <h1 className="readthis-heading">Pick your next high-signal read in seconds.</h1>
+            <p className="readthis-subheading">
+              Better contrast, faster scanning, and focused filters so you can spend less time searching and more time reading.
+            </p>
+            <div className="readthis-metrics">
+              <div className="readthis-metric">
+                <span className="readthis-metric-label">Articles</span>
+                <span className="readthis-metric-value">{(articles ?? []).length}</span>
+              </div>
+              <div className="readthis-metric">
+                <span className="readthis-metric-label">Reading time</span>
+                <span className="readthis-metric-value">
+                  ~{Math.max(1, Math.round((articles ?? []).reduce((s: number, a: Article) => s + a.word_count, 0) / 230))}m
+                </span>
+              </div>
+              <div className="readthis-metric">
+                <span className="readthis-metric-label">Library size</span>
+                <span className="readthis-metric-value">{(articles ?? []).length} items</span>
+              </div>
+            </div>
+          </section>
+          <ReadThisClient articles={articles ?? []} allTags={allTags} />
+        </div>
+        <Footer />
+      </div>
     </>
   );
 }
