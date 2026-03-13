@@ -1,26 +1,45 @@
 import type { Metadata } from "next";
+import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "stillReading",
+  title: "stillReading — RSVP Speed Reader for Markdown",
   description:
     "RSVP speed reader. Paste markdown, read word-by-word with ORP highlighting.",
+  metadataBase: new URL("https://stillreading.xyz"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
-    title: "stillReading",
+    title: "stillReading — RSVP Speed Reader",
     description:
       "Speed read anything. Paste markdown or load via URL — words appear one at a time with ORP highlighting.",
     url: "https://stillreading.xyz",
-    images: [{ url: "https://stillreading.xyz/api/og", width: 1200, height: 630 }],
+    images: [{ url: "/api/og", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "stillReading",
+    title: "stillReading — RSVP Speed Reader",
     description:
       "Speed read anything. Paste markdown or load via URL — words appear one at a time with ORP highlighting.",
-    images: ["https://stillreading.xyz/api/og"],
+    images: ["/api/og"],
   },
   icons: {
     icon: {
@@ -31,14 +50,35 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://stillreading.xyz/#website",
+        name: "stillReading",
+        url: "https://stillreading.xyz",
+        description:
+          "RSVP speed reader. Paste markdown, read word-by-word with ORP highlighting.",
+        publisher: { "@id": "https://stillreading.xyz/#organization" },
+        inLanguage: "en",
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://stillreading.xyz/#organization",
+        name: "stillReading",
+        url: "https://stillreading.xyz",
+        sameAs: ["https://github.com/megabyte0x/stillReading"],
+      },
+    ],
+  };
+
   return (
-    <html lang="en">
+    <html lang="en" className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>

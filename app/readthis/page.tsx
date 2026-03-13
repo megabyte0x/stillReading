@@ -1,10 +1,21 @@
+import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
 import type { Article } from "@/lib/types";
 import ReadThisClient from "./ReadThisClient";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "you should read this — stillReading",
-  description: "Curated reading list. Browse, filter, and speed-read the best articles.",
+  description:
+    "Curated reading list. Browse, filter, and speed-read the best articles.",
+  alternates: {
+    canonical: "/readthis",
+  },
+  openGraph: {
+    title: "you should read this — stillReading",
+    description:
+      "Curated reading list. Browse, filter, and speed-read the best articles.",
+    url: "https://stillreading.xyz/readthis",
+  },
 };
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
@@ -21,5 +32,33 @@ export default async function ReadThisPage() {
     new Set((articles ?? []).flatMap((a: Article) => a.tags))
   ).sort();
 
-  return <ReadThisClient articles={articles ?? []} allTags={allTags} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "you should read this — stillReading",
+    description:
+      "Curated reading list. Browse, filter, and speed-read the best articles.",
+    url: "https://stillreading.xyz/readthis",
+    isPartOf: { "@id": "https://stillreading.xyz/#website" },
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: (articles ?? []).length,
+      itemListElement: (articles ?? []).map((a: Article, i: number) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: a.title,
+        url: `https://stillreading.xyz/readthis/${a.slug}`,
+      })),
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ReadThisClient articles={articles ?? []} allTags={allTags} />
+    </>
+  );
 }

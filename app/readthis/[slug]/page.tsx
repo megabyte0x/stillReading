@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import type { Article } from "@/lib/types";
@@ -9,16 +10,33 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const { data: article } = await supabase
     .from("articles")
-    .select("title")
+    .select("title, tags, word_count")
     .eq("slug", slug)
     .single();
 
+  if (!article) {
+    return { title: "Article — stillReading" };
+  }
+
+  const readingMinutes = Math.ceil(article.word_count / 250);
+  const description = `${article.title}. ${readingMinutes} min speed read on stillReading.`;
+
   return {
-    title: article ? `${article.title} — stillReading` : "Article — stillReading",
+    title: `${article.title} — stillReading`,
+    description,
+    alternates: {
+      canonical: `/readthis/${slug}`,
+    },
+    openGraph: {
+      title: `${article.title} — stillReading`,
+      description,
+      url: `https://stillreading.xyz/readthis/${slug}`,
+    },
+    keywords: article.tags,
   };
 }
 
@@ -42,5 +60,55 @@ export default async function ArticlePage({ params }: PageProps) {
 
   const markdown = await getMarkdown(article);
 
-  return <ArticleReader article={article} markdown={markdown} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Article",
+        headline: article.title,
+        url: `https://stillreading.xyz/readthis/${article.slug}`,
+        datePublished: article.created_at,
+        wordCount: article.word_count,
+        keywords: article.tags,
+        isPartOf: { "@id": "https://stillreading.xyz/#website" },
+        publisher: { "@id": "https://stillreading.xyz/#organization" },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          url: `https://stillreading.xyz/readthis/${article.slug}`,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://stillreading.xyz",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "you should read this",
+            item: "https://stillreading.xyz/readthis",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: article.title,
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ArticleReader article={article} markdown={markdown} />
+    </>
+  );
 }
