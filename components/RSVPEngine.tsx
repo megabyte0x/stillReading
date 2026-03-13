@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import {
   getORP,
@@ -264,6 +264,24 @@ export default function RSVPEngine({
     [tick, startSpeechDriven],
   );
 
+  const updateVoiceSvg = useCallback((enabled: boolean) => {
+    const d = domRef.current;
+    if (!d) return;
+    const svg = d.btnVoice.querySelector("svg");
+    if (!svg) return;
+    const existing = svg.querySelector("line");
+    if (!enabled && !existing) {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "23");
+      line.setAttribute("y1", "9");
+      line.setAttribute("x2", "17");
+      line.setAttribute("y2", "15");
+      svg.appendChild(line);
+    } else if (enabled && existing) {
+      existing.remove();
+    }
+  }, []);
+
   const toggleSpeech = useCallback(() => {
     const newVal = !speechEnabledRef.current;
     speechEnabledRef.current = newVal;
@@ -275,6 +293,7 @@ export default function RSVPEngine({
         "aria-label",
         newVal ? "Disable speech mode" : "Enable speech mode",
       );
+      updateVoiceSvg(newVal);
     }
     if (!newVal) {
       if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
@@ -287,7 +306,7 @@ export default function RSVPEngine({
       if (timerRef.current) clearTimeout(timerRef.current);
       startSpeechDriven(idxRef.current);
     }
-  }, [tick, startSpeechDriven]);
+  }, [tick, startSpeechDriven, updateVoiceSvg]);
 
   // ── Load markdown ──
 
@@ -550,7 +569,6 @@ export default function RSVPEngine({
         showContentTitle(contentTitle);
       }
       setShowOnboardingBanner(false);
-      applyFocusMode(true);
       return;
     }
 
@@ -569,7 +587,6 @@ export default function RSVPEngine({
         })
         .then((md) => {
           setShowOnboardingBanner(false);
-          applyFocusMode(true);
           const match = md.match(/^#\s+(.+)$/m);
           if (match) {
             const title = match[1]
@@ -586,7 +603,6 @@ export default function RSVPEngine({
         })
         .catch((err) => {
           setShowOnboardingBanner(false);
-          applyFocusMode(true);
           console.error("Failed to load markdown from URL:", err);
           setEditorText("");
           loadMarkdown("");
@@ -614,7 +630,10 @@ export default function RSVPEngine({
   const d = domRef.current;
   if (!d) return null;
 
-  const editorWordCount = parseMarkdown(editorText).length;
+  const editorWordCount = useMemo(
+    () => parseMarkdown(editorText).length,
+    [editorText],
+  );
 
   return (
     <>

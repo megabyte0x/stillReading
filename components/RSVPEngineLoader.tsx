@@ -9,6 +9,7 @@ const RSVPEngine = dynamic(() => import("@/components/RSVPEngine"), {
 interface RSVPEngineLoaderProps {
   initialMarkdown?: string;
   contentTitle?: string;
+  onComplete?: () => void;
   showEditor?: boolean;
   showOnboarding?: boolean;
 }
