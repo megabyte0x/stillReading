@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import RSVPReader from "@/components/RSVPReader";
+import RSVPEngineLoader from "@/components/RSVPEngineLoader";
 import VoteModal from "@/components/VoteModal";
 import type { Article } from "@/lib/types";
 
@@ -15,7 +15,7 @@ export default function ArticleReader({ article, markdown }: ArticleReaderProps)
 
   return (
     <>
-      <RSVPReader
+      <RSVPEngineLoader
         initialMarkdown={markdown}
         contentTitle={article.title}
         showEditor={false}
