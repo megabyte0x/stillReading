@@ -15,39 +15,158 @@ export async function GET() {
           justifyContent: "center",
           backgroundColor: "#09090b",
           fontFamily: "monospace",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ width: "2px", height: "24px", backgroundColor: "#dc2626", opacity: 0.6 }} />
+        {/* Ambient red glow — top left */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-160px",
+            left: "-140px",
+            width: "800px",
+            height: "560px",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(239, 68, 68, 0.10) 0%, transparent 60%)",
+          }}
+        />
+        {/* Ambient blue glow — top right */}
+        <div
+          style={{
+            position: "absolute",
+            top: "-100px",
+            right: "-80px",
+            width: "600px",
+            height: "420px",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(56, 189, 248, 0.07) 0%, transparent 65%)",
+          }}
+        />
+        {/* Subtle warm glow behind redicle */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "800px",
+            height: "300px",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(239, 68, 68, 0.04) 0%, transparent 60%)",
+          }}
+        />
+
+        {/* Redicle assembly */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {/* Top guide line */}
+          <div
+            style={{
+              width: "2px",
+              height: "36px",
+              backgroundColor: "#dc2626",
+            }}
+          />
+
+          {/* Redicle — word display window */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              borderTop: "1px solid #222228",
-              borderBottom: "1px solid #222228",
-              width: "900px",
-              height: "160px",
+              borderTop: "1px solid #3f3f46",
+              borderBottom: "1px solid #3f3f46",
+              width: "1000px",
+              height: "170px",
             }}
           >
-            <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-              <span style={{ color: "#e4e4e7", fontSize: 72, fontWeight: 500, letterSpacing: "0.03em" }}>sti</span>
+            {/* Before pivot */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  color: "#e4e4e7",
+                  fontSize: 96,
+                  fontWeight: 500,
+                  letterSpacing: "0.03em",
+                }}
+              >
+                sti
+              </span>
             </div>
-            <span style={{ color: "#dc2626", fontSize: 72, fontWeight: 700, letterSpacing: "0.03em" }}>l</span>
-            <div style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
-              <span style={{ color: "#e4e4e7", fontSize: 72, fontWeight: 500, letterSpacing: "0.03em" }}>lReading</span>
+
+            {/* Pivot character */}
+            <span
+              style={{
+                color: "#dc2626",
+                fontSize: 96,
+                fontWeight: 700,
+                letterSpacing: "0.03em",
+              }}
+            >
+              l
+            </span>
+
+            {/* After pivot */}
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                justifyContent: "flex-start",
+              }}
+            >
+              <span
+                style={{
+                  color: "#e4e4e7",
+                  fontSize: 96,
+                  fontWeight: 500,
+                  letterSpacing: "0.03em",
+                }}
+              >
+                lReading
+              </span>
             </div>
           </div>
-          <div style={{ width: "2px", height: "24px", backgroundColor: "#dc2626", opacity: 0.6 }} />
+
+          {/* Bottom guide line */}
+          <div
+            style={{
+              width: "2px",
+              height: "36px",
+              backgroundColor: "#dc2626",
+            }}
+          />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 48, gap: 16 }}>
-          <span style={{ color: "#52525b", fontSize: 28 }}>Speed read anything. Word by word.</span>
-          <div style={{ display: "flex", gap: 32, color: "#3f3f46", fontSize: 20 }}>
-            <span>1. Paste markdown</span>
-            <span style={{ color: "#222228" }}>|</span>
-            <span>2. Hit play</span>
-            <span style={{ color: "#222228" }}>|</span>
-            <span>3. Read faster</span>
-          </div>
+
+        {/* URL */}
+        <div
+          style={{
+            display: "flex",
+            marginTop: 48,
+          }}
+        >
+          <span
+            style={{
+              color: "#52525b",
+              fontSize: 22,
+              letterSpacing: "0.08em",
+            }}
+          >
+            stillreading.xyz
+          </span>
         </div>
       </div>
     ),

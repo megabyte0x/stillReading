@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "video:studio": "remotion studio remotion/index.ts",
-    "video:render": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch.mp4",
-    "video:render:hq": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch-hq.mp4 --crf=15 --x264-preset=slow --pixel-format=yuv420p --overwrite",
-    "video:render:4k": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch-4k.mp4 --scale=2 --crf=16 --x264-preset=slow --pixel-format=yuv420p --overwrite"
+    "video:render": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch.mp4 --concurrency=100%",
+    "video:render:hq": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch-hq.mp4 --crf=15 --x264-preset=slow --pixel-format=yuv420p --overwrite --concurrency=100%",
+    "video:render:4k": "remotion render remotion/index.ts ReadThisLaunchVideo renders/you-should-read-this-launch-4k.mp4 --scale=2 --crf=16 --x264-preset=slow --pixel-format=yuv420p --overwrite --concurrency=100%",
+    "video:render:stillreading-4k": "remotion render remotion/index.ts StillReadingWebsiteWalkthrough4K renders/stillreading-website-walkthrough-4k.mp4 --crf=16 --x264-preset=slow --pixel-format=yuv420p --overwrite --concurrency=100%"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.97.0",
