@@ -623,17 +623,19 @@ export default function RSVPEngine({
     applyFocusMode(!showOnboardingBanner);
   }, [mounted, showOnboardingBanner, applyFocusMode]);
 
+  // ── Derived state (must be before conditional returns to satisfy Rules of Hooks) ──
+
+  const editorWordCount = useMemo(
+    () => parseMarkdown(editorText).length,
+    [editorText],
+  );
+
   // ── Portals ──
 
   if (!mounted) return null;
 
   const d = domRef.current;
   if (!d) return null;
-
-  const editorWordCount = useMemo(
-    () => parseMarkdown(editorText).length,
-    [editorText],
-  );
 
   return (
     <>
